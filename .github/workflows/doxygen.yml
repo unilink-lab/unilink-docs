@@ -32,8 +32,7 @@ jobs:
 
       - name: Generate API reference
         run: |
-          mkdir -p build/doxygen
-          doxygen doxygen/Doxyfile
+          ./scripts/generate_docs.sh
 
       - name: Upload Doxygen artifact
         uses: actions/upload-artifact@v4
