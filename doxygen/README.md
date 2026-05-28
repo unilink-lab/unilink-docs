@@ -12,7 +12,11 @@ external/unilink
 Then it runs:
 
 ```bash
-doxygen doxygen/Doxyfile
+./scripts/generate_docs.sh
 ```
+
+The generation script reads the project version from
+`external/unilink/CMakeLists.txt` and passes it to Doxygen as
+`PROJECT_NUMBER`.
 
 Generated output is written to `build/doxygen/` and should not be committed.
