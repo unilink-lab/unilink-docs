@@ -1,0 +1,24 @@
+name: Docs
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  docs:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check markdown files
+        run: |
+          find docs -name '*.md' -print
+          grep -RIn "TODO_THIS_LINK_SHOULD_NOT_EXIST" docs README.md && exit 1 || true
+
+      - name: Check generated output is not committed
+        run: |
+          test ! -d build/doxygen
+          test ! -d site
+          test ! -d public
+          test ! -d _build

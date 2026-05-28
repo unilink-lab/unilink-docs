@@ -1,0 +1,24 @@
+build/
+external/
+site/
+public/
+_build/
+doxygen/html/
+doxygen/xml/
+docs/html/
+docs/xml/
+docs/latex/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+.codex
