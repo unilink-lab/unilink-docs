@@ -1,0 +1,42 @@
+name: Doxygen
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      unilink_ref:
+        description: "unilink ref to generate API docs from"
+        default: "main"
+        required: true
+
+jobs:
+  doxygen:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout docs
+        uses: actions/checkout@v4
+
+      - name: Checkout unilink core
+        uses: actions/checkout@v4
+        with:
+          repository: jwsung91/unilink
+          ref: ${{ inputs.unilink_ref || 'main' }}
+          path: external/unilink
+
+      - name: Install Doxygen
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y doxygen graphviz
+
+      - name: Generate API reference
+        run: |
+          mkdir -p build/doxygen
+          doxygen doxygen/Doxyfile
+
+      - name: Upload Doxygen artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: doxygen-html
+          path: build/doxygen/html
