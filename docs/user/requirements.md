@@ -32,17 +32,28 @@ This guide describes the system requirements and dependencies needed to build an
 
 ### Core Library Dependencies
 
-The following packages are required to build and use `unilink`:
-
-Use vcpkg to supply third-party C++ dependencies:
+For most application consumers, install the packaged library:
 
 ```bash
-vcpkg install boost-asio boost-system spdlog
+vcpkg install jwsung91-unilink
+```
+
+Source builds need the underlying third-party dependencies:
+
+Use vcpkg to supply those source-build dependencies:
+
+```bash
+vcpkg install \
+  boost-asio \
+  boost-system \
+  spdlog
 cmake -S . -B build \
   -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake"
 ```
 
-If you use system packages instead of vcpkg, the selected Boost installation must be 1.83.0 or later. The default Ubuntu 22.04 and 24.04 apt Boost packages do not satisfy this baseline.
+If you use system packages instead of vcpkg for source builds, the selected
+Boost installation must be 1.83.0 or later. The default Ubuntu 22.04 and 24.04
+apt Boost packages do not satisfy this baseline.
 
 ### Dependency Details
 
@@ -173,8 +184,11 @@ export CXX=g++-10
 ### Problem: Boost Not Found
 
 ```bash
-# Recommended: install dependencies with vcpkg
-vcpkg install boost-asio boost-system spdlog
+# Source builds: install dependencies with vcpkg
+vcpkg install \
+  boost-asio \
+  boost-system \
+  spdlog
 
 # Or specify Boost location to CMake
 cmake -DBOOST_ROOT=/path/to/boost ...

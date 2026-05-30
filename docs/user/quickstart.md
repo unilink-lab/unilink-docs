@@ -4,23 +4,20 @@ Get started with unilink in 5 minutes!
 
 ## Installation
 
-### Prerequisites
+For most users, install the packaged library through vcpkg:
 
 ```bash
-# Ubuntu/Debian
-sudo apt update && sudo apt install -y build-essential cmake
-vcpkg install boost-asio boost-system spdlog
+vcpkg install jwsung91-unilink
 ```
 
-### Build & Install
+Then consume the CMake package from your application:
 
-```bash
-git clone https://github.com/jwsung91/unilink.git
-cd unilink
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build -j
-sudo cmake --install build
+```cmake
+find_package(unilink CONFIG REQUIRED)
+target_link_libraries(my_client PRIVATE unilink::unilink)
 ```
+
+For source builds and dependency setup, see [Installation](installation.md).
 
 ---
 
@@ -31,7 +28,7 @@ sudo cmake --install build
 #include <chrono>
 #include <iostream>
 #include <thread>
-#include "unilink/unilink.hpp"
+#include <unilink/unilink.hpp>
 
 int main() {
     // Create a TCP client - it's that simple!
@@ -98,78 +95,20 @@ g++ -std=c++20 my_client.cc -lunilink -lboost_system -pthread -o my_client
 
 ## Your First TCP Server
 
-```cpp
-#include <chrono>
-#include <iostream>
-#include <thread>
-#include "unilink/unilink.hpp"
-
-int main() {
-    // Create a TCP server (uses the default bounded client limit)
-    auto server = unilink::tcp_server(8080)
-        .on_connect([](const unilink::ConnectionContext& ctx) {
-            std::cout << "Client " << ctx.client_id() << " connected from " << ctx.client_info() << std::endl;
-        })
-        .on_data([](const unilink::MessageContext& ctx) {
-            std::cout << "Client " << ctx.client_id() << ": " << ctx.data() << std::endl;
-        })
-        .on_error([](const unilink::ErrorContext& ctx) {
-            std::cerr << "Error: " << ctx.message() << std::endl;
-        })
-        .build();
-
-    if (!server->start_sync()) {
-        std::cerr << "Failed to start server" << std::endl;
-        return 1;
-    }
-    std::cout << "Server listening on port 8080..." << std::endl;
-
-    // Keep running for 60 seconds
-    std::this_thread::sleep_for(std::chrono::seconds(60));
-    server->stop();
-    return 0;
-}
-```
+The TCP client above expects a server to be listening on `127.0.0.1:8080`.
+For a runnable server companion, see [TCP Server](tutorials/02_tcp_server.md).
 
 ---
 
-## Your First Serial Device
+## Transport Tutorials
 
-```cpp
-#include <chrono>
-#include <iostream>
-#include <thread>
-#include "unilink/unilink.hpp"
+After the first TCP client, use the transport-specific tutorials for complete
+examples:
 
-int main() {
-    // Create serial connection
-    auto serial = unilink::serial("/dev/ttyUSB0", 115200)
-        .on_connect([](const unilink::ConnectionContext& ctx) {
-            std::cout << "Serial port opened!" << std::endl;
-        })
-        .on_data([](const unilink::MessageContext& ctx) {
-            std::cout << "Received: " << ctx.data() << std::endl;
-        })
-        .on_error([](const unilink::ErrorContext& ctx) {
-            std::cerr << "Error: " << ctx.message() << std::endl;
-        })
-        .build();
-
-    if (!serial->start_sync()) {
-        std::cerr << "Failed to open serial port" << std::endl;
-        return 1;
-    }
-
-    // Send data
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-    serial->send("AT\r\n");
-
-    // Keep running
-    std::this_thread::sleep_for(std::chrono::seconds(5));
-    serial->stop();
-    return 0;
-}
-```
+- [TCP Server](tutorials/02_tcp_server.md)
+- [UDS Communication](tutorials/03_uds_communication.md)
+- [Serial Communication](tutorials/04_serial_communication.md)
+- [UDP Communication](tutorials/05_udp_communication.md)
 
 ---
 

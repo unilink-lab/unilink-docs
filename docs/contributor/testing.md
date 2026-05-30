@@ -437,7 +437,7 @@ Tests use Google Test framework:
 
 ```cpp
 #include <gtest/gtest.h>
-#include "unilink/unilink.hpp"
+#include <unilink/unilink.hpp>
 
 // Test fixture
 class MyTest : public ::testing::Test {
@@ -467,7 +467,7 @@ TEST_F(MyTest, BasicFunctionality) {
 
 ```cpp
 #include <gtest/gtest.h>
-#include "unilink/unilink.hpp"
+#include <unilink/unilink.hpp>
 #include <thread>
 #include <chrono>
 

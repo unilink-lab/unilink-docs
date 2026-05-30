@@ -289,7 +289,10 @@ cmake --build build -j
 # Install dependencies
 sudo apt update && apt install -y \
   build-essential cmake
-vcpkg install boost-asio boost-system spdlog
+vcpkg install \
+  boost-asio \
+  boost-system \
+  spdlog
 
 # Build
 cmake -S . -B build \
@@ -314,7 +317,10 @@ sudo apt update && sudo apt install -y \
 
 # Install newer compiler
 sudo apt install -y gcc-10 g++-10
-vcpkg install boost-asio boost-system spdlog
+vcpkg install \
+  boost-asio \
+  boost-system \
+  spdlog
 ```
 
 #### Build Steps
@@ -354,7 +360,10 @@ cd build && ctest --output-on-failure
 # Install dependencies
 sudo apt update && apt install -y \
   build-essential cmake
-vcpkg install boost-asio boost-system spdlog
+vcpkg install \
+  boost-asio \
+  boost-system \
+  spdlog
 
 # Build (same as Ubuntu 22.04)
 cmake -S . -B build \
@@ -503,7 +512,10 @@ nm -D build/lib/libunilink.so | grep unilink
 cmake -S . -B build -DBOOST_ROOT=/usr/local/boost-1.83
 
 # Or use vcpkg
-vcpkg install boost-asio boost-system spdlog
+vcpkg install \
+  boost-asio \
+  boost-system \
+  spdlog
 ```
 
 ### Problem: Compiler Not Found
