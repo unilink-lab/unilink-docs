@@ -82,6 +82,15 @@ C++ ABI compatibility is not guaranteed before v1.0.
 
 Applications and binary packages should be rebuilt against the exact unilink version they consume. Source compatibility is the primary compatibility goal before v1.0.
 
+## Design-Only APIs
+
+`SendResult` is currently documented as a design proposal and is not part of
+the runtime public API unless explicitly implemented in a future release.
+
+Existing `send(...)` and `try_send(...)` APIs remain the runtime APIs for send
+acceptance. Use `RuntimeStats` for cumulative diagnostics such as failed sends,
+dropped messages, dropped bytes, and queue pressure.
+
 ## Deprecation Policy
 
 Deprecated APIs should normally remain available for at least one minor release before removal.
