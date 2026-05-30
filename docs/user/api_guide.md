@@ -219,7 +219,7 @@ Connect to remote TCP servers with automatic reconnection.
 ### Basic Usage
 
 ```cpp
-#include "unilink/unilink.hpp"
+#include <unilink/unilink.hpp>
 
 auto client = unilink::tcp_client("192.168.1.100", 8080)
     .on_connect([](const unilink::ConnectionContext& ctx) {
@@ -322,7 +322,7 @@ Accept multiple client connections with thread-safe operations.
 ### Basic Usage
 
 ```cpp
-#include "unilink/unilink.hpp"
+#include <unilink/unilink.hpp>
 
 auto server = unilink::tcp_server(8080)
     .on_connect([](const unilink::ConnectionContext& ctx) {
@@ -445,7 +445,7 @@ Interface with serial devices and embedded systems.
 ### Basic Usage
 
 ```cpp
-#include "unilink/unilink.hpp"
+#include <unilink/unilink.hpp>
 
 auto serial = unilink::serial("/dev/ttyUSB0", 115200)
     .on_connect([](const unilink::ConnectionContext& ctx) {
@@ -572,7 +572,7 @@ Connectionless communication using UDP protocol.
 #### UDP Receiver (Server)
 
 ```cpp
-#include "unilink/unilink.hpp"
+#include <unilink/unilink.hpp>
 
 // Create a UDP socket bound to port 8080
 auto receiver = unilink::udp_client(8080)
@@ -593,7 +593,7 @@ if (receiver_started) {
 #### UDP Sender (Client)
 
 ```cpp
-#include "unilink/unilink.hpp"
+#include <unilink/unilink.hpp>
 
 // Create a UDP socket and set remote destination
 auto sender = unilink::udp_client(0)  // 0 = ephemeral port
@@ -686,7 +686,7 @@ High-performance local inter-process communication (IPC) using Unix Domain Socke
 #### UDS Server
 
 ```cpp
-#include "unilink/unilink.hpp"
+#include <unilink/unilink.hpp>
 
 auto server = unilink::uds_server("/tmp/my_service.sock")
     .on_connect([](const unilink::ConnectionContext& ctx) {
@@ -706,7 +706,7 @@ if (!listening) {
 #### UDS Client
 
 ```cpp
-#include "unilink/unilink.hpp"
+#include <unilink/unilink.hpp>
 
 auto client = unilink::uds_client("/tmp/my_service.sock")
     .on_connect([](const unilink::ConnectionContext& ctx) {
@@ -1116,7 +1116,7 @@ They are different from `failed_sends`. A failed send means the new payload was 
 Set the strategy via the transport config before starting:
 
 ```cpp
-#include "unilink/unilink.hpp"
+#include <unilink/unilink.hpp>
 #include "unilink/base/constants.hpp"
 
 using unilink::base::constants::BackpressureStrategy;
@@ -1137,7 +1137,7 @@ client->on_backpressure([](size_t queued_bytes) {
 Or via the wrapper builder (fluent API):
 
 ```cpp
-#include "unilink/unilink.hpp"
+#include <unilink/unilink.hpp>
 
 auto client = unilink::tcp_client("192.168.1.10", 8080)
     .backpressure_threshold(512 * 1024)

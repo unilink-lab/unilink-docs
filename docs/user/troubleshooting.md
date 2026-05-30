@@ -265,10 +265,13 @@ CMake Error: Could not find Boost
 
 **Solutions:**
 
-#### Recommended vcpkg setup
+#### Source-build vcpkg setup
 
 ```bash
-vcpkg install boost-asio boost-system spdlog
+vcpkg install \
+  boost-asio \
+  boost-system \
+  spdlog
 cmake -S . -B build \
   -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake"
 ```
@@ -279,10 +282,13 @@ cmake -S . -B build \
 cmake -S . -B build -DBOOST_ROOT=/path/to/boost-1.83-or-newer
 ```
 
-#### Windows (vcpkg)
+#### Windows source builds with vcpkg
 
 ```bash
-vcpkg install boost-asio boost-system spdlog
+vcpkg install \
+  boost-asio \
+  boost-system \
+  spdlog
 ```
 
 #### Manual Boost Path

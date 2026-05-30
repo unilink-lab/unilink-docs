@@ -64,7 +64,10 @@ sudo apt install -y \
 Install C++ dependencies through vcpkg so Boost 1.83.0+ is used consistently:
 
 ```bash
-vcpkg install boost-asio boost-system spdlog --triplet arm64-linux
+vcpkg install --triplet arm64-linux \
+  boost-asio \
+  boost-system \
+  spdlog
 ```
 
 Check the expected environment:

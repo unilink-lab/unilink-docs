@@ -23,7 +23,7 @@ A two-process UDP setup:
 <!-- doc-compile: tutorial_udp_receiver -->
 ```cpp
 #include <iostream>
-#include "unilink/unilink.hpp"
+#include <unilink/unilink.hpp>
 
 int main() {
     auto receiver = unilink::udp_client(9000)
@@ -55,7 +55,7 @@ int main() {
 ```cpp
 #include <iostream>
 #include <string>
-#include "unilink/unilink.hpp"
+#include <unilink/unilink.hpp>
 
 int main() {
     auto sender = unilink::udp_client(0)

@@ -24,7 +24,7 @@ A local echo service that:
 ```cpp
 #include <iostream>
 #include <string>
-#include "unilink/unilink.hpp"
+#include <unilink/unilink.hpp>
 
 int main() {
     const std::string socket_path = "/tmp/unilink_echo.sock";
@@ -67,7 +67,7 @@ int main() {
 ```cpp
 #include <iostream>
 #include <string>
-#include "unilink/unilink.hpp"
+#include <unilink/unilink.hpp>
 
 int main() {
     const std::string socket_path = "/tmp/unilink_echo.sock";
