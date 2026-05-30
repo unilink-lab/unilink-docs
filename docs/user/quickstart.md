@@ -84,7 +84,9 @@ cmake --build build
 
 **Direct compiler invocation:**
 
-Direct compiler invocation can need different link flags depending on how Boost and unilink were installed.
+Direct compiler invocation is shown only for minimal manual experiments. For
+normal projects, prefer CMake so transitive include paths, library paths, and
+platform-specific flags are handled correctly.
 
 ```bash
 g++ -std=c++20 my_client.cc -lunilink -lboost_system -pthread -o my_client

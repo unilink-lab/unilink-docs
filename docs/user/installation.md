@@ -48,23 +48,59 @@ int main() {
 
 **Note:** The vcpkg port name is `jwsung91-unilink`, while the CMake package and target name remain `unilink`.
 
-### Method 2: Install from Source (CMake Package)
+### Method 2: Install from Source
 
-Use this method if you prefer not to rely on a package manager or need a custom build.
+Use this method if you need a custom local build.
 
-Source builds still require Boost 1.83.0+. On Ubuntu 22.04/24.04, the default apt Boost package is older than this baseline, so use vcpkg or provide a custom Boost installation through `BOOST_ROOT`/`CMAKE_PREFIX_PATH`.
+Source builds require Boost 1.83.0+. On Ubuntu 22.04/24.04, system Boost
+packages may be older than this requirement. Prefer the repository-managed
+vcpkg setup unless you already have a suitable Boost installation.
 
-#### Step 1: Build and install
+#### Option A: Repository-managed vcpkg setup
+
+The setup script creates an untracked repository-local vcpkg checkout and uses
+it for the repository presets.
+
+```bash
+git clone https://github.com/jwsung91/unilink.git
+cd unilink
+./scripts/setup_dev_env.sh
+cmake --preset dev-linux-x64
+cmake --build --preset dev-linux-x64 --parallel 1
+```
+
+The preset names may be platform-specific. Use the closest preset for your
+platform or use the vcpkg toolchain option below.
+
+#### Option B: Plain CMake with existing dependencies
+
+Use this only when Boost 1.83.0+ and other dependencies are already
+discoverable by CMake.
 
 ```bash
 git clone https://github.com/jwsung91/unilink.git
 cd unilink
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build -j
+cmake --build build --parallel 1
 sudo cmake --install build
 ```
 
-#### Step 2: Use in your project
+#### Option C: Plain CMake with vcpkg toolchain
+
+Use this when you want a plain build directory but still want vcpkg to provide
+Boost and other third-party dependencies.
+
+```bash
+git clone https://github.com/jwsung91/unilink.git
+cd unilink
+cmake -S . -B build \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake"
+cmake --build build --parallel 1
+sudo cmake --install build
+```
+
+#### Use in your project
 
 ```cmake
 find_package(unilink CONFIG REQUIRED)
