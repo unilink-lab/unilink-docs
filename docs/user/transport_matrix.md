@@ -169,7 +169,8 @@ UDP already preserves datagram boundaries. Framers may still be useful when the 
 | `connection_timeout(...)` | ✅ | — | — | — | — | ✅ | — |
 | Port retry | — | ✅ | — | — | — | — | — |
 | `reopen_on_error(...)` | — | — | — | — | ✅ | — | — |
-| `idle_timeout(...)` | — | ✅ | — | ✅ | — | — | ✅ |
+| `idle_timeout(...)` | ✅ | ✅ | — | ✅ | — | — | ✅ |
+| `idle_timeout_action(...)` | ✅ | — | — | — | — | — | — |
 
 TCP and UDS client retry settings apply to connect/reconnect behavior. TCP server port retry applies to bind/listen startup. Serial `reopen_on_error(...)` is a builder option for device reopen behavior.
 

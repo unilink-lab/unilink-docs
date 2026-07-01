@@ -122,3 +122,5 @@ Direct builder or wrapper includes are supported for advanced users, but the umb
 Move/shared buffer send APIs are user-facing advanced APIs intended for large binary payloads.
 
 Socket tuning builder options are user-facing advanced APIs intended for workload-specific latency, throughput, and tail-behavior tuning.
+
+Idle timeout builder options (`idle_timeout(...)`, `idle_timeout_action(...)`) are user-facing APIs for application-level stale-session policy. They are supported on TCP client, TCP server, UDP server, and UDS server.

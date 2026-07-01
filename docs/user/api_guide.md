@@ -259,13 +259,17 @@ unilink::tcp_client(const std::string& host, uint16_t port)
 
 #### Builder Methods
 
-| Method                      | Parameters | Description                                                |
-| --------------------------- | ---------- | ---------------------------------------------------------- |
-| `retry_interval(ms)`        | `unsigned` | Set reconnection interval in milliseconds (default `3000`) |
-| `max_retries(count)`        | `int`      | Set maximum reconnect attempts (`-1` for unlimited)        |
-| `connection_timeout(ms)`    | `unsigned` | Set connection timeout in milliseconds                     |
-| `independent_context()`     | `bool`     | Use separate IO thread (for testing)                       |
-| `auto_start()`             | `bool`     | Auto-start immediately and stop on destruction             |
+| Method                        | Parameters              | Description                                                |
+| ----------------------------- | ----------------------- | ---------------------------------------------------------- |
+| `retry_interval(ms)`          | `unsigned`              | Set reconnection interval in milliseconds (default `3000`) |
+| `max_retries(count)`          | `int`                   | Set maximum reconnect attempts (`-1` for unlimited)        |
+| `connection_timeout(ms)`      | `unsigned`              | Set connection timeout in milliseconds                     |
+| `idle_timeout(ms)`            | `chrono::milliseconds`  | Close and reconnect after idle (0ms = disabled, default)   |
+| `idle_timeout_action(action)` | `IdleTimeoutAction`     | `Reconnect` (default) or `Close` when idle timeout expires |
+| `independent_context()`       | `bool`                  | Use separate IO thread (for testing)                       |
+| `auto_start()`                | `bool`                  | Auto-start immediately and stop on destruction             |
+
+`IdleTimeoutAction::Reconnect` closes the stale socket and follows the existing reconnect policy. `IdleTimeoutAction::Close` closes without reconnecting. `idle_timeout_action` has no effect when `idle_timeout` is `0ms`.
 
 #### Instance Methods
 
@@ -276,9 +280,11 @@ unilink::tcp_client(const std::string& host, uint16_t port)
 | `connected()`             | `bool`              | Check connection status                                               |
 | `start()`                  | `std::future<bool>` | Start connection attempt                                              |
 | `stop()`                   | `void`              | Stop and disconnect                                                   |
-| `retry_interval()`     | `TcpClient&`        | Adjust reconnection interval at runtime (`std::chrono::milliseconds`) |
-| `max_retries()`        | `TcpClient&`        | Set max reconnect attempts (`-1` for unlimited)                       |
-| `connection_timeout()` | `TcpClient&`        | Set connection timeout (`std::chrono::milliseconds`)                  |
+| `retry_interval()`         | `TcpClient&`        | Adjust reconnection interval at runtime (`std::chrono::milliseconds`) |
+| `max_retries()`            | `TcpClient&`        | Set max reconnect attempts (`-1` for unlimited)                       |
+| `connection_timeout()`     | `TcpClient&`        | Set connection timeout (`std::chrono::milliseconds`)                  |
+| `idle_timeout()`           | `TcpClient&`        | Set idle timeout at runtime (`std::chrono::milliseconds`)             |
+| `idle_timeout_action()`    | `TcpClient&`        | Set idle timeout action at runtime (`IdleTimeoutAction`)              |
 
 ### Advanced Examples
 
@@ -375,6 +381,7 @@ unilink::tcp_server(uint16_t port)
 | `max_clients(n)`            | `size_t`                     | Set maximum concurrent clients (0 = unlimited, default)              |
 | `bind_address(address)`     | `string`                     | Bind to a specific network interface (e.g., "127.0.0.1")             |
 | `port_retry()`              | `bool, retries, interval_ms` | Retry if port is in use                                              |
+| `idle_timeout(ms)`          | `chrono::milliseconds`       | Close idle client sessions after inactivity (0ms = disabled)         |
 | `independent_context()`     | `bool`                       | Run on a dedicated `io_context` thread managed by unilink            |
 | `auto_start()`              | `bool`                       | Auto-start immediately and stop on destruction                       |
 
@@ -631,15 +638,16 @@ unilink::udp_server(uint16_t local_port)
 
 #### Builder Methods (UdpServer)
 
-| Method                      | Parameters         | Description                                                          |
-| --------------------------- | ------------------ | -------------------------------------------------------------------- |
-| `local_port(port)`          | `uint16_t`         | Bind to a specific local port                                        |
-| `bind_address(address)`     | `string`           | Bind to a specific network interface (e.g., "127.0.0.1")             |
-| `max_clients(n)`            | `size_t`           | Set maximum concurrent clients (0 = unlimited, default)              |
-| `broadcast(enable)`         | `bool`             | Enable broadcast receives                                            |
-| `reuse_address(enable)`     | `bool`             | Enable SO_REUSEADDR on the socket                                    |
-| `independent_context()`     | `bool`             | Run on dedicated IO thread                                           |
-| `auto_start()`              | `bool`             | Auto-start/stop lifecycle                                            |
+| Method                      | Parameters             | Description                                                          |
+| --------------------------- | ---------------------- | -------------------------------------------------------------------- |
+| `local_port(port)`          | `uint16_t`             | Bind to a specific local port                                        |
+| `bind_address(address)`     | `string`               | Bind to a specific network interface (e.g., "127.0.0.1")             |
+| `max_clients(n)`            | `size_t`               | Set maximum concurrent clients (0 = unlimited, default)              |
+| `broadcast(enable)`         | `bool`                 | Enable broadcast receives                                            |
+| `reuse_address(enable)`     | `bool`                 | Enable SO_REUSEADDR on the socket                                    |
+| `idle_timeout(ms)`          | `chrono::milliseconds` | Remove virtual sessions after inactivity; triggers `on_disconnect` (0ms = disabled) |
+| `independent_context()`     | `bool`                 | Run on dedicated IO thread                                           |
+| `auto_start()`              | `bool`                 | Auto-start/stop lifecycle                                            |
 
 #### Instance Methods (UdpClient)
 
@@ -731,11 +739,12 @@ unilink::uds_client(const std::string& socket_path)
 
 #### Builder Methods (UDS Server)
 
-| Method                      | Parameters | Description                                             |
-| --------------------------- | ---------- | ------------------------------------------------------- |
-| `max_clients(n)`            | `size_t`   | Set maximum concurrent clients (0 = unlimited, default) |
-| `independent_context()`     | `bool`     | Run on dedicated IO thread                              |
-| `auto_start()`              | `bool`     | Auto-start/stop lifecycle                               |
+| Method                      | Parameters             | Description                                                  |
+| --------------------------- | ---------------------- | ------------------------------------------------------------ |
+| `max_clients(n)`            | `size_t`               | Set maximum concurrent clients (0 = unlimited, default)      |
+| `idle_timeout(ms)`          | `chrono::milliseconds` | Close idle client sessions after inactivity (0ms = disabled) |
+| `independent_context()`     | `bool`                 | Run on dedicated IO thread                                   |
+| `auto_start()`              | `bool`                 | Auto-start/stop lifecycle                                    |
 
 > **Note**: `single_client()` and `multi_client(max)` are deprecated in favor of `max_clients(n)`.
 
