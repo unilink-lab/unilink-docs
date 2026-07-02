@@ -96,7 +96,7 @@ If data needs to be stored, queued, moved to another thread, or used after the c
 
 **Builder-Specific Options**
 
-- `TcpClientBuilder` / `SerialBuilder`: `.retry_interval(ms)` (default `3000ms`)
+- `TcpClientBuilder` / `SerialBuilder`: `.retry_interval(ms)` (default `1000ms`)
 - `TcpServerBuilder`: `.port_retry(enable, max_retries, retry_interval_ms)`
 - `TcpServerBuilder`: `.single_client()`, `.multi_client(max>=2)`, or `.max_clients(n)` (defaults to a bounded connection limit)
 - TCP server callbacks use the same Context-based signatures. Use `ctx.client_id()` and `ctx.client_info()` to distinguish clients.
@@ -234,7 +234,7 @@ auto client = unilink::tcp_client("192.168.1.100", 8080)
     .on_error([](const unilink::ErrorContext& ctx) {
         std::cerr << "Error: " << ctx.message() << std::endl;
     })
-    .retry_interval(3000ms)  // Optional: Retry every 3 seconds (default)
+    .retry_interval(3000ms)  // Optional: Retry every 3 seconds (override; default is 1000ms)
     .build();
 
 // Start connection
@@ -261,7 +261,7 @@ unilink::tcp_client(const std::string& host, uint16_t port)
 
 | Method                        | Parameters              | Description                                                |
 | ----------------------------- | ----------------------- | ---------------------------------------------------------- |
-| `retry_interval(ms)`          | `unsigned`              | Set reconnection interval in milliseconds (default `3000`) |
+| `retry_interval(ms)`          | `unsigned`              | Set reconnection interval in milliseconds (default `1000`) |
 | `max_retries(count)`          | `int`                   | Set maximum reconnect attempts (`-1` for unlimited)        |
 | `connection_timeout(ms)`      | `unsigned`              | Set connection timeout in milliseconds                     |
 | `idle_timeout(ms)`            | `chrono::milliseconds`  | Close and reconnect after idle (0ms = disabled, default)   |
@@ -498,7 +498,7 @@ unilink::serial(const std::string& device, uint32_t baud_rate)
 | `stop_bits(bits)`           | `int`      | Set serial stop bits before `build()`                     |
 | `parity(mode)`              | `string`   | Set serial parity before `build()`                        |
 | `flow_control(mode)`        | `string`   | Set flow control before `build()`                         |
-| `retry_interval(ms)`        | `unsigned` | Set reconnection interval (default `3000`)                |
+| `retry_interval(ms)`        | `unsigned` | Set reconnection interval (default `1000`)                |
 | `independent_context()`     | `bool`     | Run on a dedicated `io_context` thread managed by unilink |
 | `auto_start()`             | `bool`     | Auto-start immediately and stop on destruction            |
 
@@ -752,7 +752,7 @@ unilink::uds_client(const std::string& socket_path)
 
 | Method                      | Parameters | Description                                |
 | --------------------------- | ---------- | ------------------------------------------ |
-| `retry_interval(ms)`        | `unsigned` | Set reconnection interval (default `3000`) |
+| `retry_interval(ms)`        | `unsigned` | Set reconnection interval (default `1000`) |
 | `max_retries(count)`        | `int`      | Set maximum reconnect attempts             |
 | `connection_timeout(ms)`    | `unsigned` | Set connection timeout in milliseconds     |
 | `independent_context()`     | `bool`     | Run on a dedicated `io_context` thread     |

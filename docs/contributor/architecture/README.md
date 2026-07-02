@@ -175,7 +175,7 @@ namespace unilink::transport {
 
 - Boost.Asio based
 - Asynchronous I/O
-- Retry logic (3s default interval, first retry at 100ms)
+- Retry logic (1s default interval, first retry at 100ms)
 - Backpressure guard: callback at high watermark (default 1 MiB), hard cap triggers socket close + Error state
 
 ### 4. Common Utilities
@@ -215,7 +215,7 @@ TcpClient(host, port, retry_interval, callbacks...);
 
 // We use this:
 auto client = tcp_client(host, port)
-    .retry_interval(3000ms)  // Optional, 3000ms is default
+    .retry_interval(3000ms)  // Optional; default is 1000ms
     .on_data(callback)
     .build();
 
@@ -538,7 +538,7 @@ unilink::FixedInterval(std::chrono::milliseconds delay);
 unilink::ExponentialBackoff(min_delay, max_delay, factor, jitter);
 ```
 
-The wrapper-layer default is a fixed 3-second interval. Exponential backoff requires dropping to the transport layer directly (see api_guide.md – Custom Reconnect Policy).
+The wrapper-layer default is a fixed 1-second interval. Exponential backoff requires dropping to the transport layer directly (see api_guide.md – Custom Reconnect Policy).
 
 ---
 

@@ -186,7 +186,7 @@ stateDiagram-v2
 
     note right of Connecting
         Retry Interval:
-        - Default: 3000ms (3s)
+        - Default: 1000ms (1s)
         - First retry: 100ms
         - Min: 100ms
         - Max: 300000ms (5min)
@@ -236,7 +236,7 @@ client->start();  // Start the connection explicitly
 
 #### Default Behavior
 
-- **Unlimited retries** with 3-second intervals (first retry after 100ms)
+- **Unlimited retries** with 1-second intervals (first retry after 100ms)
 - Automatically reconnects on connection loss
 - No exponential backoff (constant interval)
 
@@ -246,7 +246,10 @@ client->start();  // Start the connection explicitly
 // Fast reconnection (aggressive)
 .retry_interval(100)  // 100 ms
 
-// Moderate reconnection (default)
+// Default
+.retry_interval(1000ms)  // 1 second
+
+// Moderate reconnection
 .retry_interval(3000ms)  // 3 seconds
 
 // Slow reconnection (conservative)
