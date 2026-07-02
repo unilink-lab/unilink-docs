@@ -126,7 +126,7 @@ Callbacks are optional for construction. In production code, register `.on_error
 using namespace std::chrono_literals;
 
 auto client = unilink::tcp_client("server.com", 8080)
-    .retry_interval(3000ms)  // Retry every 3 seconds (default)
+    .retry_interval(3000ms)  // Retry every 3 seconds (override; default is 1000ms)
     .on_error([](const unilink::ErrorContext& ctx) {
         std::cerr << "Error: " << ctx.message() << std::endl;
     })
