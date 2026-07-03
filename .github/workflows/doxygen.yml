@@ -39,3 +39,24 @@ jobs:
         with:
           name: doxygen-html
           path: build/doxygen/html
+
+      # Deploys straight to jwsung91/unilink's own gh-pages branch (not this
+      # repo's) so the docs keep serving from the existing
+      # https://jwsung91.github.io/unilink/ address. Only runs on a direct
+      # push to main here - never for PRs, and not for an arbitrary
+      # workflow_dispatch ref, to avoid publishing untrusted or non-main
+      # content. keep_files is required: coverage.yml deploys test-coverage
+      # reports under coverage/ on that same branch/root, and without
+      # keep_files this deploy would delete that directory on every run.
+      - name: Deploy API docs to jwsung91/unilink Pages
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          deploy_key: ${{ secrets.UNILINK_PAGES_DEPLOY_KEY }}
+          external_repository: jwsung91/unilink
+          publish_branch: gh-pages
+          publish_dir: build/doxygen/html
+          keep_files: true
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+          commit_message: 'deploy: API docs from unilink-docs@${{ github.sha }}'
