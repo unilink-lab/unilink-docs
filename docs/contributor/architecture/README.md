@@ -382,42 +382,59 @@ class TcpClient {
 
 ### IO Context Management
 
-#### Shared Context (Default)
+#### Dedicated Context (Default)
+
+Every transport (`TcpClient`, `TcpServer`, `UdsClient`, `UdsServer`, `UdpChannel`, `Serial`) owns its own `io_context` and a dedicated thread by default:
 
 ```cpp
-// Multiple channels share one I/O thread
+// Each of these gets its own io_context + thread - no coordination needed
 auto client1 = tcp_client("server1.com", 8080).build();
 auto client2 = tcp_client("server2.com", 8080).build();
-// Both use shared IoContextManager
+auto server = tcp_server(8080).build();
 ```
 
 **Pros:**
 
-- Efficient resource usage
-- Single I/O thread handles all connections
+- Independent instances can't stall each other - a slow callback on one connection doesn't block others
+- No shared global state between unrelated instances
+- Matches how every transport has always worked, except `TcpServer`/`Serial` prior to #440 (see below)
 
 **Cons:**
 
-- All connections share same thread
+- One thread per instance; many instances in one process means many threads
 
-#### Independent Context
+> **History**: before #440, `TcpServer` and `Serial` defaulted to a *shared* `IoContextManager` singleton instead - this was an accidental side effect of an unrelated test-deadlock fix (see #440's design-plan comment for the git-archaeology), not a deliberate architectural choice, and it meant every `TcpServer`/`Serial` instance in a process - including all of a server's sessions' I/O and callbacks - serialized onto one thread with no opt-out. All transports are consistent now.
+
+#### Independent Context (wrapper-managed external `io_context`)
 
 ```cpp
-// Each channel has its own I/O thread
+// The wrapper constructs and owns its own separate boost::asio::io_context,
+// driven by its own thread (distinct from the transport's default dedicated
+// context above) - useful when the caller wants to supply/observe the
+// io_context directly, or for test isolation.
 auto client = tcp_client("server.com", 8080)
     .independent_context(true)
     .build();
 ```
 
+#### Shared Context (explicit opt-in, `TcpServer`/`Serial` only)
+
+For the genuine multi-instance-per-process case where reduced thread/memory overhead matters more than per-instance parallelism, `TcpServer` and `Serial` can opt back into the shared `IoContextManager` singleton explicitly:
+
+```cpp
+// Both of these now consolidate onto the shared IoContextManager's single thread
+auto server1 = tcp_server(8080).shared_context(true).build();
+auto server2 = tcp_server(8081).shared_context(true).build();
+```
+
 **Pros:**
 
-- Isolation between connections
-- Useful for testing
+- Lower thread/memory overhead when running many servers in one process
 
 **Cons:**
 
-- More resource usage
-- More threads
+- All opted-in instances (and all of their sessions) share one thread - a slow callback on one stalls the others
+- Not available for `TcpClient`/`UdsClient`/`UdsServer`/`UdpChannel`, which have always owned a dedicated context
 
 ---
 

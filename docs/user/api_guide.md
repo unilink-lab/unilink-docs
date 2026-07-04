@@ -183,8 +183,9 @@ tcp_server(port)
 
 ### IO Context Ownership (advanced)
 
-- **Default**: Builders use the shared `IoContextManager` thread; unilink starts/stops it for you.
-- **`independent_context(true)`**: Builder creates its own `io_context` and runs it on an internal thread; cleanup is automatic.
+- **Default**: every transport owns a dedicated `io_context` + thread; unilink starts/stops it for you automatically. Independent instances can't stall each other.
+- **`independent_context(true)`**: Builder creates its own separate `io_context` and runs it on an internal thread (distinct from the default above); cleanup is automatic.
+- **`shared_context(true)`** (`TcpServer`/`Serial` only): opts back into the shared `IoContextManager` thread so many instances in one process consolidate onto a single thread, trading per-instance parallelism for reduced thread/memory overhead. Most callers should not need this.
 - **External `io_context`**: If you manually pass a custom `io_context` to wrapper constructors, unilink will _not_ run/stop it unless you call `manage_external_context(true)` on the wrapper. In that case, callbacks should be registered before enabling `auto_start(true)` (it starts immediately).
 
 ### Starting Synchronously vs. Asynchronously
@@ -1017,14 +1018,22 @@ class MyApplication {
 
 ## Performance Tips
 
-### 1. Use Independent Context for Testing Only
+### 1. IO Context Ownership Defaults Are Already Efficient
+
+Every transport already owns a dedicated `io_context` + thread by default - no flag needed for the common case, and no risk of one instance's slow callback stalling another's.
 
 ```cpp
-// Testing (isolated IO thread)
-.independent_context(true)
+// Default: this server gets its own thread, independent of anything else
+auto server = unilink::tcp_server(8080).build();
 
-// Production (shared IO thread - more efficient)
-.independent_context(false)  // default
+// Only reach for shared_context(true) (TcpServer/Serial only) if you're
+// deliberately running many instances in one process and want to trade
+// per-instance parallelism for reduced thread/memory overhead:
+auto server2 = unilink::tcp_server(8081).shared_context(true).build();
+
+// independent_context(true) is a different axis (a wrapper-managed
+// external io_context, e.g. for test isolation), not a shared/dedicated
+// choice - most application code doesn't need it.
 ```
 
 ### 2. Enable Async Logging
