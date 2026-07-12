@@ -22,3 +22,8 @@ env.bak/
 venv.bak/
 
 .codex
+
+# agent-rules (local only)
+AGENTS.md
+CLAUDE.md
+GEMINI.md
