@@ -29,7 +29,7 @@
 */
 
 /*!
-@page contrib_arch Unilink System Architecture
+@page contrib_arch Wirestead System Architecture
 @subpage contrib_arch_runtime
 @subpage contrib_arch_memory
 @subpage contrib_arch_channel

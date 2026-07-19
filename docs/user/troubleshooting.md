@@ -1,6 +1,6 @@
 # Troubleshooting Guide {#user_troubleshooting}
 
-Common issues and solutions when using unilink.
+Common issues and solutions when using wirestead.
 
 ---
 
@@ -109,7 +109,7 @@ auto client = tcp_client("server.com", 8080)
 // Enable auto-reconnection
 auto client = tcp_client("server.com", 8080)
     .retry_interval(3000ms)  // Retry every 3 seconds
-    .on_disconnect([](const unilink::ConnectionContext&) {
+    .on_disconnect([](const wirestead::ConnectionContext&) {
         log_info("Disconnected, will auto-retry");
     })
     .build();
@@ -119,7 +119,7 @@ auto client = tcp_client("server.com", 8080)
 
 ```cpp
 // Log disconnect reason
-.on_disconnect([this](const unilink::ConnectionContext&) {
+.on_disconnect([this](const wirestead::ConnectionContext&) {
     // Check if stop() was called
     if (!intentional_disconnect_) {
         log_warning("Unexpected disconnect from server");
@@ -184,20 +184,20 @@ auto server = tcp_server(8080)
 
 ## Compilation Errors
 
-### Problem: unilink/unilink.hpp Not Found
+### Problem: wirestead/wirestead.hpp Not Found
 
 **Symptoms:**
 
 ```
-fatal error: unilink/unilink.hpp: No such file or directory
+fatal error: wirestead/wirestead.hpp: No such file or directory
 ```
 
 **Solutions:**
 
-#### 1. Install unilink
+#### 1. Install wirestead
 
 ```bash
-cd unilink
+cd wirestead
 cmake -S . -B build
 sudo cmake --install build
 ```
@@ -206,40 +206,40 @@ sudo cmake --install build
 
 ```bash
 # CMake
-target_include_directories(your_app PRIVATE /path/to/unilink/include)
+target_include_directories(your_app PRIVATE /path/to/wirestead/include)
 
 # g++
-g++ -I/path/to/unilink/include ...
+g++ -I/path/to/wirestead/include ...
 ```
 
 #### 3. Use as Subdirectory
 
 ```cmake
 # CMakeLists.txt
-add_subdirectory(unilink)
-target_link_libraries(your_app PRIVATE unilink::unilink)
+add_subdirectory(wirestead)
+target_link_libraries(your_app PRIVATE wirestead::wirestead)
 ```
 
 ---
 
-### Problem: Undefined Reference to unilink Symbols
+### Problem: Undefined Reference to wirestead Symbols
 
 **Symptoms:**
 
 ```
-undefined reference to `unilink::tcp_client(std::string const&, unsigned short)'
+undefined reference to `wirestead::tcp_client(std::string const&, unsigned short)'
 ```
 
 **Solutions:**
 
-#### 1. Link unilink Library
+#### 1. Link wirestead Library
 
 ```bash
 # g++
-g++ main.cpp -o app -lunilink -lboost_system -pthread
+g++ main.cpp -o app -lwirestead -lboost_system -pthread
 
 # CMake
-target_link_libraries(your_app PRIVATE unilink Boost::system pthread)
+target_link_libraries(your_app PRIVATE wirestead Boost::system pthread)
 ```
 
 #### 2. Check Library Path
@@ -249,7 +249,7 @@ target_link_libraries(your_app PRIVATE unilink Boost::system pthread)
 export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
 
 # Or add to ldconfig
-sudo sh -c 'echo "/usr/local/lib" > /etc/ld.so.conf.d/unilink.conf'
+sudo sh -c 'echo "/usr/local/lib" > /etc/ld.so.conf.d/wirestead.conf'
 sudo ldconfig
 ```
 
@@ -372,7 +372,7 @@ auto client = tcp_client("server.com", 8080)
 
 // Register a receive callback when data should be observed
 auto client = tcp_client("server.com", 8080)
-    .on_data([](const unilink::MessageContext& ctx) {
+    .on_data([](const wirestead::MessageContext& ctx) {
         std::cout << ctx.data() << std::endl;
     })
     .build();
@@ -398,7 +398,7 @@ client->start();  // Start the connection
 // BAD
 int main() {
     auto client = tcp_client("server.com", 8080)
-        .on_connect([](const unilink::ConnectionContext&) { std::cout << "Connected!\n"; })
+        .on_connect([](const wirestead::ConnectionContext&) { std::cout << "Connected!\n"; })
         .build();
     client->start();
     
@@ -408,7 +408,7 @@ int main() {
 // GOOD
 int main() {
     auto client = tcp_client("server.com", 8080)
-        .on_connect([](const unilink::ConnectionContext&) { std::cout << "Connected!\n"; })
+        .on_connect([](const wirestead::ConnectionContext&) { std::cout << "Connected!\n"; })
         .build();
     client->start();
     
@@ -432,8 +432,8 @@ int main() {
 ```cpp
 // Reliable prevents sender-side queue drops, but cannot prevent
 // network-level or receiver-side packet loss.
-auto udp = unilink::udp_client("192.168.1.100", 9000)
-    .backpressure_strategy(unilink::BackpressureStrategy::Reliable)
+auto udp = wirestead::udp_client("192.168.1.100", 9000)
+    .backpressure_strategy(wirestead::BackpressureStrategy::Reliable)
     .build();
 ```
 
@@ -454,14 +454,14 @@ auto udp = unilink::udp_client("192.168.1.100", 9000)
 
 ```cpp
 // BAD - Blocks I/O thread
-.on_data([](const unilink::MessageContext& ctx) {
+.on_data([](const wirestead::MessageContext& ctx) {
     while (processing) {  // Busy loop!
         process();
     }
 })
 
 // GOOD - Process asynchronously
-.on_data([this](const unilink::MessageContext& ctx) {
+.on_data([this](const wirestead::MessageContext& ctx) {
     message_queue_.push(std::string(ctx.data()));  // Queue for processing
 })
 ```
@@ -480,14 +480,14 @@ auto udp = unilink::udp_client("192.168.1.100", 9000)
 
 ```cpp
 // BAD - Log every byte
-.on_data([](const unilink::MessageContext& ctx) {
+.on_data([](const wirestead::MessageContext& ctx) {
     for (auto byte : ctx.data()) {
         logger.debug("byte", "received", std::to_string(byte));
     }
 })
 
 // GOOD - Log summary
-.on_data([](const unilink::MessageContext& ctx) {
+.on_data([](const wirestead::MessageContext& ctx) {
     logger.debug("data", "received", "Received " + std::to_string(ctx.data().size()) + " bytes");
 })
 ```
@@ -577,9 +577,9 @@ std::vector<uint8_t> create_binary_message(const std::string& data) {
 
 ```cpp
 // Don't let logging slow down I/O
-unilink::diagnostics::AsyncLogConfig config;
+wirestead::diagnostics::AsyncLogConfig config;
 config.batch_size = 100;
-unilink::diagnostics::Logger::instance().set_async_logging(true, config);
+wirestead::diagnostics::Logger::instance().set_async_logging(true, config);
 ```
 
 ---
@@ -598,7 +598,7 @@ Memory leak detected: 1024 bytes at 0x...
 
 ```bash
 # Build with AddressSanitizer
-cmake -DUNILINK_ENABLE_SANITIZERS=ON ..
+cmake -DWIRESTEAD_ENABLE_SANITIZERS=ON ..
 cmake --build .
 
 # Run
@@ -670,16 +670,16 @@ void add_client(size_t id) {
 // In main() or initialization
 void setup_debugging() {
     // Set debug log level
-    unilink::diagnostics::Logger::instance().set_level(unilink::diagnostics::LogLevel::DEBUG);
-    unilink::diagnostics::Logger::instance().set_console_output(true);
-    unilink::diagnostics::Logger::instance().set_file_output("debug.log");
+    wirestead::diagnostics::Logger::instance().set_level(wirestead::diagnostics::LogLevel::DEBUG);
+    wirestead::diagnostics::Logger::instance().set_console_output(true);
+    wirestead::diagnostics::Logger::instance().set_file_output("debug.log");
     
     // Enable error handler
-    unilink::diagnostics::ErrorHandler::instance().set_min_error_level(
-        unilink::diagnostics::ErrorLevel::INFO
+    wirestead::diagnostics::ErrorHandler::instance().set_min_error_level(
+        wirestead::diagnostics::ErrorLevel::INFO
     );
-    unilink::diagnostics::ErrorHandler::instance().register_callback(
-        [](const unilink::diagnostics::ErrorInfo& error) {
+    wirestead::diagnostics::ErrorHandler::instance().register_callback(
+        [](const wirestead::diagnostics::ErrorInfo& error) {
             std::cerr << "[ERROR] " << error.summary() << std::endl;
         }
     );
@@ -738,9 +738,9 @@ nc localhost 8080 < test_data.txt
 
 If you're still experiencing issues:
 
-1. **Check Examples**: Look at <https://github.com/unilink-lab/unilink-examples>
+1. **Check Examples**: Look at <https://github.com/wirestead/unilink-examples>
 2. **Read API Guide**: See `docs/user/api_guide.md`
-3. **Search Issues**: <https://github.com/jwsung91/unilink/issues>
+3. **Search Issues**: <https://github.com/wirestead/wirestead/issues>
 4. **Ask Community**: Create a new issue with:
    - Minimal reproducible example
    - Error messages / logs

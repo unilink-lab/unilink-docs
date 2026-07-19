@@ -1,6 +1,6 @@
 # Memory Safety Architecture {#contrib_arch_memory}
 
-`unilink` provides comprehensive memory safety features to ensure robust and secure applications. This document describes the memory safety architecture, features, and best practices.
+`wirestead` provides comprehensive memory safety features to ensure robust and secure applications. This document describes the memory safety architecture, features, and best practices.
 
 ---
 
@@ -31,7 +31,7 @@
 
 ### Safety Levels
 
-`unilink` provides multiple levels of memory safety:
+`wirestead` provides multiple levels of memory safety:
 
 ```mermaid
 flowchart TD
@@ -50,13 +50,13 @@ flowchart TD
 Immutable, type-safe buffer wrapper that owns copied data:
 
 ```cpp
-#include "unilink/memory/memory_tracker.hpp"
-#include "unilink/memory/safe_span.hpp"
-#include "unilink/memory/safe_data_buffer.hpp"
+#include "wirestead/memory/memory_tracker.hpp"
+#include "wirestead/memory/safe_span.hpp"
+#include "wirestead/memory/safe_data_buffer.hpp"
 
 // Create from existing data
-unilink::memory::SafeDataBuffer from_vec(std::vector<uint8_t>{1, 2, 3});
-unilink::memory::SafeDataBuffer from_str(std::string("hello"));
+wirestead::memory::SafeDataBuffer from_vec(std::vector<uint8_t>{1, 2, 3});
+wirestead::memory::SafeDataBuffer from_str(std::string("hello"));
 
 // Read access
 auto span = from_vec.as_span();      // Non-owning view
@@ -83,9 +83,9 @@ auto unchecked = from_vec.data()[0]; // Pointer access
 Utility functions prevent undefined behavior:
 
 ```cpp
-#include "unilink/base/common.hpp"
+#include "wirestead/base/common.hpp"
 
-using namespace unilink::common::safe_convert;
+using namespace wirestead::common::safe_convert;
 
 // Safe uint8_t* to string conversion
 const uint8_t* data = ...;
@@ -130,9 +130,9 @@ buffer.validate();
 Lightweight, non-owning view of contiguous data:
 
 ```cpp
-#include "unilink/memory/safe_span.hpp"
+#include "wirestead/memory/safe_span.hpp"
 
-void process_data(unilink::memory::ConstByteSpan data) {
+void process_data(wirestead::memory::ConstByteSpan data) {
     // Iteration (operator[] is unchecked)
     for (size_t i = 0; i < data.size(); i++) {
         uint8_t byte = data[i];
@@ -146,7 +146,7 @@ void process_data(unilink::memory::ConstByteSpan data) {
 
 // Usage
 std::vector<uint8_t> buffer = {1, 2, 3, 4, 5};
-process_data(unilink::memory::ConstByteSpan(buffer));
+process_data(wirestead::memory::ConstByteSpan(buffer));
 ```
 
 **Features:**
@@ -167,7 +167,7 @@ process_data(unilink::memory::ConstByteSpan(buffer));
 Read-write lock based state management:
 
 ```cpp
-#include "unilink/concurrency/thread_safe_state.hpp"
+#include "wirestead/concurrency/thread_safe_state.hpp"
 
 enum class ConnectionState {
     Closed,
@@ -176,7 +176,7 @@ enum class ConnectionState {
     Error
 };
 
-unilink::concurrency::ThreadSafeState<ConnectionState> state(ConnectionState::Closed);
+wirestead::concurrency::ThreadSafeState<ConnectionState> state(ConnectionState::Closed);
 
 // Thread 1: Write
 state.set_state(ConnectionState::Connecting);
@@ -198,7 +198,7 @@ bool updated = state.compare_and_set(
 Lock-free atomic state operations:
 
 ```cpp
-#include "unilink/concurrency/thread_safe_state.hpp"
+#include "wirestead/concurrency/thread_safe_state.hpp"
 
 AtomicState<int> counter(0);
 
@@ -280,7 +280,7 @@ Enable for debugging and development:
 ```bash
 cmake -S . -B build \
   -DCMAKE_BUILD_TYPE=Debug \
-  -DUNILINK_ENABLE_MEMORY_TRACKING=ON
+  -DWIRESTEAD_ENABLE_MEMORY_TRACKING=ON
 ```
 
 ---
@@ -292,15 +292,15 @@ cmake -S . -B build \
 Monitor all memory allocations and deallocations:
 
 ```cpp
-#include "unilink/memory/memory_tracker.hpp"
+#include "wirestead/memory/memory_tracker.hpp"
 
 // Tracking happens automatically
 auto* data = new uint8_t[1024];  // Tracked
 delete[] data;  // Tracked
 
 // Query statistics
-unilink::memory::MemoryTracker::MemoryStats stats =
-    unilink::memory::MemoryTracker::instance().get_stats();
+wirestead::memory::MemoryTracker::MemoryStats stats =
+    wirestead::memory::MemoryTracker::instance().get_stats();
 std::cout << "Total allocations: " << stats.total_allocations << std::endl;
 std::cout << "Total deallocations: " << stats.total_deallocations << std::endl;
 std::cout << "Current usage: " << stats.current_bytes_allocated << " bytes" << std::endl;
@@ -314,7 +314,7 @@ Identify potential memory leaks:
 
 ```cpp
 // At program exit, check for leaks
-auto stats = unilink::memory::MemoryTracker::instance().get_stats();
+auto stats = wirestead::memory::MemoryTracker::instance().get_stats();
 
 if (stats.total_allocations != stats.total_deallocations) {
     size_t leaked = stats.total_allocations - stats.total_deallocations;
@@ -374,7 +374,7 @@ std::string report = MemoryTracker::instance().get_report_string();
 Memory tracking has **zero overhead** in Release builds:
 
 ```cpp
-// In Release builds (UNILINK_ENABLE_MEMORY_TRACKING=OFF):
+// In Release builds (WIRESTEAD_ENABLE_MEMORY_TRACKING=OFF):
 // All tracking calls are compiled out
 // No runtime overhead
 // No memory overhead
@@ -389,7 +389,7 @@ Memory tracking has **zero overhead** in Release builds:
 ```bash
 cmake -S . -B build \
   -DCMAKE_BUILD_TYPE=Debug \
-  -DUNILINK_ENABLE_SANITIZERS=ON
+  -DWIRESTEAD_ENABLE_SANITIZERS=ON
 
 cmake --build build -j
 ```
@@ -501,14 +501,14 @@ uint8_t* bytes = const_cast<uint8_t*>(str.data());  // Removes const incorrectly
 ThreadSafeState<State> state;
 ThreadSafeCounter counter;
 
-// Let unilink handle synchronization
+// Let wirestead handle synchronization
 client->send(data);  // Already thread-safe
 ```
 
 #### ❌ DON'T
 
 ```cpp
-// Avoid manual locking of unilink internals
+// Avoid manual locking of wirestead internals
 // std::lock_guard<std::mutex> lock(internal_mutex);  // DON'T DO THIS
 
 // Avoid shared state without synchronization
@@ -523,7 +523,7 @@ client->send(data);  // Already thread-safe
 
 ```cpp
 // Enable in Debug builds
-cmake -DCMAKE_BUILD_TYPE=Debug -DUNILINK_ENABLE_MEMORY_TRACKING=ON
+cmake -DCMAKE_BUILD_TYPE=Debug -DWIRESTEAD_ENABLE_MEMORY_TRACKING=ON
 
 // Check for leaks at exit
 auto stats = MemoryTracker::instance().get_stats();
@@ -534,7 +534,7 @@ assert(stats.total_allocations == stats.total_deallocations);
 
 ```cpp
 // Don't enable in Release builds (performance)
-// cmake -DCMAKE_BUILD_TYPE=Release -DUNILINK_ENABLE_MEMORY_TRACKING=ON
+// cmake -DCMAKE_BUILD_TYPE=Release -DWIRESTEAD_ENABLE_MEMORY_TRACKING=ON
 
 // Don't ignore leak reports
 
@@ -548,7 +548,7 @@ assert(stats.total_allocations == stats.total_deallocations);
 
 ```cpp
 // Use during development and testing
-cmake -DCMAKE_BUILD_TYPE=Debug -DUNILINK_ENABLE_SANITIZERS=ON
+cmake -DCMAKE_BUILD_TYPE=Debug -DWIRESTEAD_ENABLE_SANITIZERS=ON
 
 // Run full test suite with sanitizers
 ctest --output-on-failure
@@ -571,7 +571,7 @@ ctest --output-on-failure
 
 ### Prevents Common Vulnerabilities
 
-| Vulnerability       | Traditional C++ | unilink                    |
+| Vulnerability       | Traditional C++ | wirestead                    |
 | ------------------- | --------------- | -------------------------- |
 | **Buffer Overflow** | Possible        | Prevented (bounds checked) |
 | **Use-After-Free**  | Possible        | Detected (ASan)            |
@@ -616,7 +616,7 @@ ctest --test-dir build --output-on-failure -L unit_memory_fast
 
 ```bash
 # Run with AddressSanitizer
-cmake -S . -B build -DUNILINK_ENABLE_SANITIZERS=ON
+cmake -S . -B build -DWIRESTEAD_ENABLE_SANITIZERS=ON
 cmake --build build
 cd build && ctest
 ```

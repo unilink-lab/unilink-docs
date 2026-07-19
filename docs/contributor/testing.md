@@ -1,6 +1,6 @@
 # Testing Guide {#contrib_testing}
 
-Complete guide for testing `unilink`, including running tests, CI/CD integration, and writing custom tests.
+Complete guide for testing `wirestead`, including running tests, CI/CD integration, and writing custom tests.
 
 ---
 
@@ -25,7 +25,7 @@ For Jetson / Ubuntu ARM64 validation, use the dedicated runbook:
 
 ```bash
 # 1. Build with tests enabled
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DUNILINK_BUILD_TESTS=ON
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DWIRESTEAD_BUILD_TESTS=ON
 cmake --build build -j
 
 # 2. Run all tests
@@ -37,8 +37,8 @@ ctest --output-on-failure
 ```
 
 **Suite toggles**
-- Master switch: `-DUNILINK_BUILD_TESTS=ON|OFF`
-- Packaging tip: set `UNILINK_BUILD_TESTS=OFF` in vcpkg/air-gapped builds to skip fetching GoogleTest.
+- Master switch: `-DWIRESTEAD_BUILD_TESTS=ON|OFF`
+- Packaging tip: set `WIRESTEAD_BUILD_TESTS=OFF` in vcpkg/air-gapped builds to skip fetching GoogleTest.
 
 ---
 
@@ -48,7 +48,7 @@ ctest --output-on-failure
 # 1. Configure with Visual Studio generator
 cmake -S . -B build-windows `
   -G "Visual Studio 17 2022" -A x64 `
-  -DUNILINK_BUILD_TESTS=ON
+  -DWIRESTEAD_BUILD_TESTS=ON
 
 # 2. Build the desired configuration (Debug shown here)
 cmake --build build-windows --config Debug --target ALL_BUILD
@@ -64,14 +64,14 @@ Remove-Item build-windows -Recurse -Force
 cmake -S . -B build-windows -G "Ninja" `
   -DCMAKE_TOOLCHAIN_FILE="F:/lib/vcpkg/scripts/buildsystems/vcpkg.cmake" `
   -DVCPKG_TARGET_TRIPLET=x64-windows `
-  -DUNILINK_BUILD_SHARED=ON `
-  -DUNILINK_BUILD_TESTS=ON
+  -DWIRESTEAD_BUILD_SHARED=ON `
+  -DWIRESTEAD_BUILD_TESTS=ON
 cmake --build build-windows
 ctest --test-dir build-windows --output-on-failure
 ```
 
 **Windows-specific notes**
-- Re-run CMake (or create a fresh `build-windows` directory) after updating the repository so that built test executables inherit the post-build step that copies `unilink.dll` beside each executable.
+- Re-run CMake (or create a fresh `build-windows` directory) after updating the repository so that built test executables inherit the post-build step that copies `wirestead.dll` beside each executable.
 - Serial error recovery scenarios rely on Unix-style device paths and are automatically skipped when running on Windows.
 - The async logging timing sanity check uses a lower Windows threshold because of OS timer granularity and scheduling differences.
 
@@ -88,7 +88,7 @@ ctest --output-on-failure
 
 **Expected output:**
 ```
-Test project /path/to/unilink/build
+Test project /path/to/wirestead/build
     Start 1: BaseTest.CommonFunctionality
 1/X Test #1: BaseTest.CommonFunctionality ................   Passed    0.XX sec
     ...
@@ -238,7 +238,7 @@ ctest --test-dir build --output-on-failure -R IoContext
 ### Benchmarking
 
 Standalone performance benchmarks are maintained separately:
-[unilink-lab/unilink-benchmarks](https://github.com/unilink-lab/unilink-benchmarks).
+[Wirestead benchmarks repository](https://github.com/wirestead/unilink-benchmarks).
 
 ---
 
@@ -270,8 +270,8 @@ Enable memory tracking for development:
 ```bash
 cmake -S . -B build \
   -DCMAKE_BUILD_TYPE=Debug \
-  -DUNILINK_ENABLE_MEMORY_TRACKING=ON \
-  -DUNILINK_BUILD_TESTS=ON
+  -DWIRESTEAD_ENABLE_MEMORY_TRACKING=ON \
+  -DWIRESTEAD_BUILD_TESTS=ON
 
 cmake --build build -j
 cd build && ctest
@@ -292,8 +292,8 @@ Detect memory errors at runtime:
 ```bash
 cmake -S . -B build \
   -DCMAKE_BUILD_TYPE=Debug \
-  -DUNILINK_ENABLE_SANITIZERS=ON \
-  -DUNILINK_BUILD_TESTS=ON
+  -DWIRESTEAD_ENABLE_SANITIZERS=ON \
+  -DWIRESTEAD_BUILD_TESTS=ON
 
 cmake --build build -j
 cd build && ctest --output-on-failure
@@ -318,7 +318,7 @@ Detect thread race conditions:
 cmake -S . -B build \
   -DCMAKE_BUILD_TYPE=Debug \
   -DCMAKE_CXX_FLAGS="-fsanitize=thread" \
-  -DUNILINK_BUILD_TESTS=ON
+  -DWIRESTEAD_BUILD_TESTS=ON
 
 cmake --build build -j
 cd build && ctest
@@ -337,7 +337,7 @@ Advanced memory debugging:
 
 ```bash
 # Build with debug symbols
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DUNILINK_BUILD_TESTS=ON
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DWIRESTEAD_BUILD_TESTS=ON
 cmake --build build -j
 
 # Run tests under Valgrind
@@ -359,8 +359,8 @@ All tests are automatically run on every commit and pull request through GitHub 
 
 **CI/CD Badges:**
 
-[![CI/CD Pipeline](https://github.com/jwsung91/unilink/actions/workflows/ci.yml/badge.svg)](https://github.com/jwsung91/unilink/actions/workflows/ci.yml)
-[![Code Coverage](https://github.com/jwsung91/unilink/actions/workflows/coverage.yml/badge.svg)](https://github.com/jwsung91/unilink/actions/workflows/coverage.yml)
+[![CI/CD Pipeline](https://github.com/wirestead/wirestead/actions/workflows/ci.yml/badge.svg)](https://github.com/wirestead/wirestead/actions/workflows/ci.yml)
+[![Code Coverage](https://github.com/wirestead/wirestead/actions/workflows/coverage.yml/badge.svg)](https://github.com/wirestead/wirestead/actions/workflows/coverage.yml)
 
 ---
 
@@ -404,7 +404,7 @@ Tests run across multiple configurations:
 **Local Testing on Ubuntu 20.04:**
 ```bash
 # Build and test locally on Ubuntu 20.04
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DUNILINK_BUILD_TESTS=ON
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DWIRESTEAD_BUILD_TESTS=ON
 cmake --build build -j
 cd build && ctest --output-on-failure
 ```
@@ -418,8 +418,8 @@ cd build && ctest --output-on-failure
 ### View CI/CD Results
 
 **CI/CD Dashboard:**
-- [GitHub Actions Workflows](https://github.com/jwsung91/unilink/actions)
-- [Coverage Reports](https://github.com/jwsung91/unilink/actions/workflows/coverage.yml)
+- [GitHub Actions Workflows](https://github.com/wirestead/wirestead/actions)
+- [Coverage Reports](https://github.com/wirestead/wirestead/actions/workflows/coverage.yml)
 
 **What CI/CD validates:**
 - ✅ All unit tests pass
@@ -437,7 +437,7 @@ Tests use Google Test framework:
 
 ```cpp
 #include <gtest/gtest.h>
-#include <unilink/unilink.hpp>
+#include <wirestead/wirestead.hpp>
 
 // Test fixture
 class MyTest : public ::testing::Test {
@@ -453,7 +453,7 @@ protected:
 
 // Test case
 TEST_F(MyTest, BasicFunctionality) {
-    auto client = unilink::tcp_client("127.0.0.1", 8080)
+    auto client = wirestead::tcp_client("127.0.0.1", 8080)
         .build();
     
     ASSERT_NE(client, nullptr);
@@ -467,7 +467,7 @@ TEST_F(MyTest, BasicFunctionality) {
 
 ```cpp
 #include <gtest/gtest.h>
-#include <unilink/unilink.hpp>
+#include <wirestead/wirestead.hpp>
 #include <thread>
 #include <chrono>
 
@@ -476,11 +476,11 @@ TEST(CustomTest, ClientServerCommunication) {
     bool server_ready = false;
     
     // Create server
-    auto server = unilink::tcp_server(8080)
-        .on_connect([](const unilink::ConnectionContext& ctx) {
+    auto server = wirestead::tcp_server(8080)
+        .on_connect([](const wirestead::ConnectionContext& ctx) {
             std::cout << "Client connected: " << ctx.client_id() << std::endl;
         })
-        .on_data([&received_data](const unilink::MessageContext& ctx) {
+        .on_data([&received_data](const wirestead::MessageContext& ctx) {
             received_data = std::string(ctx.data());
         })
         .build();
@@ -490,7 +490,7 @@ TEST(CustomTest, ClientServerCommunication) {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
     
     // Create client
-    auto client = unilink::tcp_client("127.0.0.1", 8080)
+    auto client = wirestead::tcp_client("127.0.0.1", 8080)
         .build();
     
     ASSERT_TRUE(client->start_sync());
@@ -558,7 +558,7 @@ Control test behavior:
 
 ```bash
 # Increase log verbosity
-export UNILINK_LOG_LEVEL=DEBUG
+export WIRESTEAD_LOG_LEVEL=DEBUG
 
 # Disable colored output
 export GTEST_COLOR=no
@@ -614,7 +614,7 @@ sudo kill -9 <PID>
 valgrind --leak-check=full ./build/bin/run_unit_test_pool_limits
 
 # Or use AddressSanitizer
-cmake -S . -B build -DUNILINK_ENABLE_SANITIZERS=ON
+cmake -S . -B build -DWIRESTEAD_ENABLE_SANITIZERS=ON
 cmake --build build
 ctest --test-dir build --output-on-failure -L unit_memory_fast
 ```
@@ -624,7 +624,7 @@ ctest --test-dir build --output-on-failure -L unit_memory_fast
 ## Performance Regression Testing
 
 Use the standalone benchmark repository:
-[unilink-lab/unilink-benchmarks](https://github.com/unilink-lab/unilink-benchmarks).
+[Wirestead benchmarks repository](https://github.com/wirestead/unilink-benchmarks).
 
 ---
 
@@ -637,7 +637,7 @@ Use the standalone benchmark repository:
 cmake -S . -B build \
   -DCMAKE_BUILD_TYPE=Debug \
   -DCMAKE_CXX_FLAGS="--coverage" \
-  -DUNILINK_BUILD_TESTS=ON
+  -DWIRESTEAD_BUILD_TESTS=ON
 
 cmake --build build -j
 

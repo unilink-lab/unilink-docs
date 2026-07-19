@@ -1,4 +1,4 @@
-# Getting Started with Unilink {#tutorial_01}
+# Getting Started with Wirestead {#tutorial_01}
 
 This tutorial shows the current builder-based C++ API for creating a simple TCP client with connection, data, disconnect, and error callbacks.
 
@@ -28,7 +28,7 @@ Create `my_first_client.cpp`:
 #include <iostream>
 #include <chrono>
 #include <string>
-#include <unilink/unilink.hpp>
+#include <wirestead/wirestead.hpp>
 
 using namespace std::chrono_literals;
 
@@ -36,19 +36,19 @@ int main(int argc, char** argv) {
     std::string host = (argc > 1) ? argv[1] : "127.0.0.1";
     uint16_t port = (argc > 2) ? static_cast<uint16_t>(std::stoi(argv[2])) : 8080;
 
-    auto client = unilink::tcp_client(host, port)
+    auto client = wirestead::tcp_client(host, port)
         .retry_interval(2000ms)
         .max_retries(3)
-        .on_connect([](const unilink::ConnectionContext&) {
+        .on_connect([](const wirestead::ConnectionContext&) {
             std::cout << "Connected to server" << std::endl;
         })
-        .on_disconnect([](const unilink::ConnectionContext&) {
+        .on_disconnect([](const wirestead::ConnectionContext&) {
             std::cout << "Disconnected from server" << std::endl;
         })
-        .on_data([](const unilink::MessageContext& ctx) {
+        .on_data([](const wirestead::MessageContext& ctx) {
             std::cout << "[Server] " << ctx.data() << std::endl;
         })
-        .on_error([](const unilink::ErrorContext& ctx) {
+        .on_error([](const wirestead::ErrorContext& ctx) {
             std::cerr << "[Error] " << ctx.message()
                       << " (code=" << static_cast<int>(ctx.code()) << ")" << std::endl;
         })
@@ -81,12 +81,12 @@ Create `CMakeLists.txt`:
 
 ```cmake
 cmake_minimum_required(VERSION 3.12)
-project(my_first_unilink_app LANGUAGES CXX)
+project(my_first_wirestead_app LANGUAGES CXX)
 
-find_package(unilink CONFIG REQUIRED)
+find_package(wirestead CONFIG REQUIRED)
 
 add_executable(my_first_client my_first_client.cpp)
-target_link_libraries(my_first_client PRIVATE unilink::unilink)
+target_link_libraries(my_first_client PRIVATE wirestead::wirestead)
 target_compile_features(my_first_client PRIVATE cxx_std_20)
 ```
 
@@ -147,7 +147,7 @@ After the client is running, use:
 
 Ready-to-build examples are maintained in the external examples repository:
 
-- [unilink-lab/unilink-examples](https://github.com/unilink-lab/unilink-examples)
+- [Wirestead examples repository](https://github.com/wirestead/unilink-examples)
 
 This tutorial stays smaller than the example sources on purpose.
 

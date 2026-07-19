@@ -6,8 +6,8 @@ on:
     branches: [main]
   workflow_dispatch:
     inputs:
-      unilink_ref:
-        description: "unilink ref to generate API docs from"
+      wirestead_ref:
+        description: "Wirestead ref to generate API docs from"
         default: "main"
         required: true
 
@@ -18,12 +18,12 @@ jobs:
       - name: Checkout docs
         uses: actions/checkout@v4
 
-      - name: Checkout unilink core
+      - name: Checkout Wirestead core
         uses: actions/checkout@v4
         with:
-          repository: jwsung91/unilink
-          ref: ${{ inputs.unilink_ref || 'main' }}
-          path: external/unilink
+          repository: wirestead/wirestead
+          ref: ${{ inputs.wirestead_ref || 'main' }}
+          path: external/wirestead
 
       - name: Install Doxygen
         run: |

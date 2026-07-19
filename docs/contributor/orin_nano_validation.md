@@ -1,6 +1,6 @@
 # Orin Nano Validation {#contrib_orin_nano_validation}
 
-Step-by-step validation runbook for `unilink` on NVIDIA Jetson Orin Nano and
+Step-by-step validation runbook for `wirestead` on NVIDIA Jetson Orin Nano and
 similar Ubuntu `aarch64` systems.
 
 ---
@@ -12,11 +12,11 @@ Use this guide when you want to answer one of these questions:
 - Does the C++ core library build from source on Ubuntu ARM64?
 - Do the unit and integration tests pass on Jetson Orin Nano?
 - Do Linux serial integration tests work with `socat` or loopback hardware?
-- Does the installed CMake package work with `find_package(unilink)`?
+- Does the installed CMake package work with `find_package(wirestead)`?
 
-Python bindings are validated in the separate unilink-python repository:
+Python bindings are validated in the separate Wirestead Python repository:
 
-https://github.com/unilink-lab/unilink-python
+https://github.com/wirestead/unilink-python
 
 This guide assumes:
 
@@ -32,8 +32,8 @@ Most recent reported Jetson Orin Nano result:
 - Result: `100% tests passed, 0 tests failed out of 481`
 - Real elapsed test time: `25.52 sec`
 - ARM64 release artifact package generation passed
-- Installed-package consumer smoke passed with `find_package(unilink)` and
-  `unilink::unilink`
+- Installed-package consumer smoke passed with `find_package(wirestead)` and
+  `wirestead::wirestead`
 - Serial integration labels passed as part of the full sweep
 - One test was listed as not run because it is disabled by design:
   `UdsErrorTest.ServerStopWithActiveSessions`
@@ -92,8 +92,8 @@ From the repository root:
 ```bash
 cmake -S . -B build-orin \
   -DCMAKE_BUILD_TYPE=Debug \
-  -DUNILINK_BUILD_DOCS=OFF \
-  -DUNILINK_BUILD_TESTS=ON \
+  -DWIRESTEAD_BUILD_DOCS=OFF \
+  -DWIRESTEAD_BUILD_TESTS=ON \
   -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" \
   -DVCPKG_TARGET_TRIPLET=arm64-linux
 ```
@@ -169,7 +169,7 @@ That creates two connected serial endpoints:
 
 You can then use your own local smoke test against those endpoints. Runnable
 sample programs are maintained separately:
-[unilink-lab/unilink-examples](https://github.com/unilink-lab/unilink-examples).
+[Wirestead examples repository](https://github.com/wirestead/unilink-examples).
 
 ### Physical Loopback
 
@@ -190,20 +190,20 @@ For a practical "supported on Orin Nano" claim, use this minimum bar:
 1. `cmake` configure succeeds on Ubuntu 22.04 ARM64.
 2. `cmake --build` succeeds with tests enabled.
 3. Unit and integration `ctest` commands pass.
-4. Installed-package consumer smoke passes with `find_package(unilink)`.
+4. Installed-package consumer smoke passes with `find_package(wirestead)`.
 
 The current Orin Nano report satisfies that bar and also includes:
 
 1. ARM64 `TGZ` package generation.
-2. Installed-package consumer smoke using the canonical `unilink::unilink`
+2. Installed-package consumer smoke using the canonical `wirestead::wirestead`
    target.
 
 For a stronger "generic Ubuntu ARM64" claim, add:
 
 1. The same validation on Ubuntu 24.04 ARM64.
 2. At least one serial validation path, either `socat` or physical loopback.
-3. unilink-python ARM64 validation if the Python package is part of your release
-   claim: https://github.com/unilink-lab/unilink-python
+3. Wirestead Python ARM64 validation if the Python package is part of your release
+   claim: https://github.com/wirestead/unilink-python
 
 ---
 
@@ -248,6 +248,6 @@ If TCP or UDS tests fail intermittently:
 - [Build Guide](build_guide.md)
 - [Requirements](../user/requirements.md)
 - [Serial Communication Tutorial](../user/tutorials/04_serial_communication.md)
-- [unilink-python](https://github.com/unilink-lab/unilink-python)
+- [Wirestead Python repository](https://github.com/wirestead/unilink-python)
 
 [Back to Contributor Guide](index.md)

@@ -1,9 +1,9 @@
-# unilink-docs
+# Wirestead Docs
 
-Documentation repository for the `unilink` C++20 core library.
+Documentation repository for the `wirestead` C++20 core library.
 
 Core library:
-https://github.com/jwsung91/unilink
+https://github.com/wirestead/wirestead
 
 This repository contains:
 

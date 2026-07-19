@@ -29,7 +29,7 @@ narrow unit fixture.
 
 The test tree is controlled by CMake options rather than hardcoded assumptions in this document.
 
-- `UNILINK_BUILD_TESTS`: enables test targets
+- `WIRESTEAD_BUILD_TESTS`: enables test targets
 
 Treat `test/CMakeLists.txt` and the active build directory as the source of truth for what is currently registered.
 
@@ -54,7 +54,7 @@ ctest -L "e2e_.*"
 ```
 
 Standalone benchmarks are maintained separately:
-[unilink-lab/unilink-benchmarks](https://github.com/unilink-lab/unilink-benchmarks).
+[Wirestead benchmarks repository](https://github.com/wirestead/unilink-benchmarks).
 
 ### Useful Focused Runs
 

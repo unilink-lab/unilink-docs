@@ -1,9 +1,9 @@
 # Transport Channel Contract {#contrib_arch_channel}
 
-**Internal architecture note:** This document describes the transport-layer `unilink::interface::Channel` contract and related implementation guarantees. It is not the public wrapper/builder API reference. Public application-facing behavior is documented in `docs/user/api_guide.md`.
+**Internal architecture note:** This document describes the transport-layer `wirestead::interface::Channel` contract and related implementation guarantees. It is not the public wrapper/builder API reference. Public application-facing behavior is documented in `docs/user/api_guide.md`.
 
 ## 1. Introduction
-The unilink library provides flexible communication channels (TCP, UDP, Serial, UDS) that abstract away low-level networking and hardware details. To keep behavior consistent across these transports, the transport layer follows a formal "Channel Contract". This document outlines the guarantees expected from internal channel implementations and the runtime assumptions built on top of them.
+The wirestead library provides flexible communication channels (TCP, UDP, Serial, UDS) that abstract away low-level networking and hardware details. To keep behavior consistent across these transports, the transport layer follows a formal "Channel Contract". This document outlines the guarantees expected from internal channel implementations and the runtime assumptions built on top of them.
 
 ## 2. Core Principles
 The Channel Contract is built upon the following core principles:
@@ -67,7 +67,7 @@ A dropped queued payload must be accounted separately from a rejected send. `Bes
 
 ## 5. Error Handling Consistency
 
-All transport implementations report errors through the `unilink::diagnostics` error reporting API using a shared `ErrorInfo` structure. This ensures consistent error propagation across transports.
+All transport implementations report errors through the `wirestead::diagnostics` error reporting API using a shared `ErrorInfo` structure. This ensures consistent error propagation across transports.
 
 **Error severity levels (`ErrorLevel`):**
 
@@ -94,7 +94,7 @@ All transport implementations report errors through the `unilink::diagnostics` e
 2. A transport MUST set `retryable = true` only for errors where the wrapper layer is expected to attempt reconnection.
 3. Errors generated during or after `stop()` MUST NOT be reported to user callbacks (see Stop Semantics in §3).
 
-**Reporting functions** (in `unilink::diagnostics::error_reporting`):
+**Reporting functions** (in `wirestead::diagnostics::error_reporting`):
 
 ```cpp
 report_connection_error(component, operation, boost_ec, retryable);
@@ -105,7 +105,7 @@ report_memory_error(component, operation, message);
 
 ## 6. State Transitions
 
-Transport channels use `unilink::base::LinkState` to track lifecycle state.
+Transport channels use `wirestead::base::LinkState` to track lifecycle state.
 
 ```cpp
 enum class LinkState { Idle, Connecting, Listening, Connected, Closed, Error };

@@ -1,6 +1,6 @@
 # Transport Feature Matrix {#user_transport_matrix}
 
-This document summarizes which user-facing features are available across unilink transport wrappers.
+This document summarizes which user-facing features are available across wirestead transport wrappers.
 
 The matrix focuses on public wrapper and builder behavior. Internal transport implementation details may differ.
 
@@ -13,7 +13,7 @@ Legend:
 
 ## Overview
 
-`unilink` provides a unified builder/wrapper surface across TCP, UDP, Serial, and UDS. The goal is consistent control flow, not identical protocol behavior.
+`wirestead` provides a unified builder/wrapper surface across TCP, UDP, Serial, and UDS. The goal is consistent control flow, not identical protocol behavior.
 
 Some differences are expected:
 

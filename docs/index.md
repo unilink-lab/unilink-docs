@@ -1,4 +1,4 @@
-# Unilink Documentation {#docs_index}
+# Wirestead Documentation {#docs_index}
 
 **Unified async communication for modern C++20.**
 
@@ -10,7 +10,7 @@ Choose the guide that matches your role.
 
 ## 📖 For Library Users
 
-You are building an application using unilink.
+You are building an application using wirestead.
 
 → **[User Guide](user/index.md)**
 
@@ -23,7 +23,7 @@ You are building an application using unilink.
 | [API Stability](user/api_stability.md) | Public API, source compatibility, ABI, and deprecation policy |
 | [Transport Feature Matrix](user/transport_matrix.md) | Feature support across wrappers and transports |
 | [Troubleshooting](user/troubleshooting.md) | Common failures and debugging steps |
-| [Python Bindings](user/python_bindings.md) | Moved to unilink-python |
+| [Python Bindings](user/python_bindings.md) | Moved to the Wirestead Python repository |
 | [Performance](user/performance.md) | Build and runtime tuning |
 
 **Tutorials:**
@@ -41,7 +41,7 @@ You are building an application using unilink.
 
 ## 🔧 For Contributors
 
-You are developing or extending unilink itself.
+You are developing or extending wirestead itself.
 
 → **[Contributor Guide](contributor/index.md)**
 
@@ -64,7 +64,7 @@ You are developing or extending unilink itself.
 
 ## Examples and Tests
 
-- [Examples Repository](https://github.com/unilink-lab/unilink-examples)
-- [Core repository tests](https://github.com/jwsung91/unilink/tree/main/test)
+- [Examples Repository](https://github.com/wirestead/unilink-examples)
+- [Core repository tests](https://github.com/wirestead/wirestead/tree/main/test)
 
-[Back to Repository](https://github.com/unilink-lab/unilink-docs)
+[Back to Repository](https://github.com/wirestead/unilink-docs)

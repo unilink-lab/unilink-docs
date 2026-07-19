@@ -27,31 +27,31 @@ Create `echo_server.cpp`:
 ```cpp
 #include <iostream>
 #include <string>
-#include <unilink/unilink.hpp>
+#include <wirestead/wirestead.hpp>
 
 class EchoServerApp {
 public:
     void start(uint16_t port) {
-        server_ = unilink::tcp_server(port)
+        server_ = wirestead::tcp_server(port)
             .port_retry(true)
-            .on_connect([this](const unilink::ConnectionContext& ctx) {
+            .on_connect([this](const wirestead::ConnectionContext& ctx) {
                 std::cout << "[Connect] client=" << ctx.client_id()
                           << " info=" << ctx.client_info() << std::endl;
                 if (server_) {
                     server_->send_to(ctx.client_id(), "Welcome to Echo Server!\n");
                 }
             })
-            .on_data([this](const unilink::MessageContext& ctx) {
+            .on_data([this](const wirestead::MessageContext& ctx) {
                 std::cout << "[Data] client=" << ctx.client_id()
                           << " data=" << ctx.data() << std::endl;
                 if (server_) {
                     server_->send_to(ctx.client_id(), "Echo: " + std::string(ctx.data()));
                 }
             })
-            .on_disconnect([](const unilink::ConnectionContext& ctx) {
+            .on_disconnect([](const wirestead::ConnectionContext& ctx) {
                 std::cout << "[Disconnect] client=" << ctx.client_id() << std::endl;
             })
-            .on_error([](const unilink::ErrorContext& ctx) {
+            .on_error([](const wirestead::ErrorContext& ctx) {
                 std::cerr << "[Error] " << ctx.message() << std::endl;
             })
             .build();
@@ -69,7 +69,7 @@ public:
     }
 
 private:
-    std::unique_ptr<unilink::TcpServer> server_;
+    std::unique_ptr<wirestead::TcpServer> server_;
 };
 
 int main() {
@@ -127,9 +127,9 @@ The key callback contexts are:
 Choose a client-limit mode before `build()`:
 
 ```cpp
-unilink::tcp_server(8080).single_client();
-unilink::tcp_server(8080).multi_client(8);
-unilink::tcp_server(8080);
+wirestead::tcp_server(8080).single_client();
+wirestead::tcp_server(8080).multi_client(8);
+wirestead::tcp_server(8080);
 ```
 
 For tutorial simplicity, the example above uses the default bounded client limit.
@@ -140,7 +140,7 @@ For tutorial simplicity, the example above uses the default bounded client limit
 
 Ready-to-build examples are maintained in the external examples repository:
 
-- [unilink-lab/unilink-examples](https://github.com/unilink-lab/unilink-examples)
+- [Wirestead examples repository](https://github.com/wirestead/unilink-examples)
 
 ---
 

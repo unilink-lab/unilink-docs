@@ -1,6 +1,6 @@
-# Unilink API Guide {#user_api_guide}
+# Wirestead API Guide {#user_api_guide}
 
-Comprehensive API reference for the unilink library.
+Comprehensive API reference for the wirestead library.
 
 For a transport-by-transport support overview, see [Transport Feature Matrix](transport_matrix.md).
 
@@ -24,12 +24,12 @@ For a transport-by-transport support overview, see [Transport Feature Matrix](tr
 
 ## Builder API
 
-The Builder API is the recommended way to use unilink. It provides a fluent, chainable interface for creating communication channels.
+The Builder API is the recommended way to use wirestead. It provides a fluent, chainable interface for creating communication channels.
 
 ### Core Concept
 
 ```cpp
-auto channel = unilink::{type}(params)
+auto channel = wirestead::{type}(params)
     .option1(value1)
     .option2(value2)
     .on_event(callback)
@@ -48,7 +48,7 @@ auto channel = unilink::{type}(params)
 | `.backpressure_threshold(bytes)` | Set queued outgoing byte threshold                                | Reliable: 1 MiB, BestEffort: 512 KiB |
 | `.backpressure_strategy(enum)`   | Set behavior when threshold is reached (`Reliable`, `BestEffort`)  | `Reliable`|
 | `.auto_start(bool)`             | Auto-start/stop the wrapper (starts immediately when `true`)      | `false`  |
-| `.independent_context(bool)`     | Create and run a dedicated `io_context` thread managed by unilink | `false`  |
+| `.independent_context(bool)`     | Create and run a dedicated `io_context` thread managed by wirestead | `false`  |
 | `.use_line_framer(...)`          | Split incoming bytes into delimiter-based messages                | Disabled |
 | `.use_packet_framer(...)`        | Split incoming bytes into packet-based messages                   | Disabled |
 | `.on_message(callback)`          | Handle framed messages (`const MessageContext&`)                  | None     |
@@ -64,7 +64,7 @@ Default `None` means no callback is invoked.
 
 Callback registration is optional.
 
-If a callback is not registered, unilink treats it as a no-op. This keeps simple smoke tests, send-only clients, and minimal examples easy to write.
+If a callback is not registered, wirestead treats it as a no-op. This keeps simple smoke tests, send-only clients, and minimal examples easy to write.
 
 For production applications, registering `.on_error(...)` is strongly recommended so startup, I/O, reconnection, and shutdown failures are visible to application code.
 
@@ -81,7 +81,7 @@ If data needs to be stored, queued, moved to another thread, or used after the c
 - `ctx.data_as_vector()` — returns `std::vector<uint8_t>` (copy)
 
 ```cpp
-.on_data([](const unilink::MessageContext& ctx) {
+.on_data([](const wirestead::MessageContext& ctx) {
     // OK: use within the callback
     std::cout << ctx.data() << std::endl;
 
@@ -114,7 +114,7 @@ Use `.on_message()` together with a framer when you want callback flow to operat
 
 ```cpp
 .use_line_framer("\n")
-.on_message([](const unilink::MessageContext& ctx) {
+.on_message([](const wirestead::MessageContext& ctx) {
     std::cout << "Framed message: " << ctx.data() << std::endl;
 })
 ```
@@ -143,7 +143,7 @@ client->send_move(std::move(payload));
 
 After calling `send_move(...)` or `try_send_move(...)`, treat the vector as consumed regardless of the return value.
 
-For immutable payloads that should be shared with unilink:
+For immutable payloads that should be shared with wirestead:
 
 ```cpp
 auto payload = std::make_shared<const std::vector<uint8_t>>(build_frame());
@@ -183,14 +183,14 @@ tcp_server(port)
 
 ### IO Context Ownership (advanced)
 
-- **Default**: every transport owns a dedicated `io_context` + thread; unilink starts/stops it for you automatically. Independent instances can't stall each other.
+- **Default**: every transport owns a dedicated `io_context` + thread; wirestead starts/stops it for you automatically. Independent instances can't stall each other.
 - **`independent_context(true)`**: Builder creates its own separate `io_context` and runs it on an internal thread (distinct from the default above); cleanup is automatic.
 - **`shared_context(true)`** (`TcpServer`/`Serial` only): opts back into the shared `IoContextManager` thread so many instances in one process consolidate onto a single thread, trading per-instance parallelism for reduced thread/memory overhead. Most callers should not need this.
-- **External `io_context`**: If you manually pass a custom `io_context` to wrapper constructors, unilink will _not_ run/stop it unless you call `manage_external_context(true)` on the wrapper. In that case, callbacks should be registered before enabling `auto_start(true)` (it starts immediately).
+- **External `io_context`**: If you manually pass a custom `io_context` to wrapper constructors, wirestead will _not_ run/stop it unless you call `manage_external_context(true)` on the wrapper. In that case, callbacks should be registered before enabling `auto_start(true)` (it starts immediately).
 
 ### Starting Synchronously vs. Asynchronously
 
-Unilink provides two ways to start a channel or server:
+Wirestead provides two ways to start a channel or server:
 
 1.  **Synchronous (`start_sync()`):** Blocks the calling thread until the connection is established (client) or the port is bound (server). Returns a `bool` indicating success. Best for simple command-line tools or initial setup.
 2.  **Asynchronous (`start()`):** Returns immediately with a `std::future<bool>`. The actual startup process happens in the background. Best for GUI applications or systems managing multiple concurrent connections.
@@ -198,8 +198,8 @@ Unilink provides two ways to start a channel or server:
 #### Asynchronous Example
 
 ```cpp
-auto client = unilink::tcp_client("127.0.0.1", 8080)
-    .on_connect([](const unilink::ConnectionContext& ctx) {
+auto client = wirestead::tcp_client("127.0.0.1", 8080)
+    .on_connect([](const wirestead::ConnectionContext& ctx) {
         std::cout << "Connected asynchronously!" << std::endl;
     })
     .build();
@@ -220,19 +220,19 @@ Connect to remote TCP servers with automatic reconnection.
 ### Basic Usage
 
 ```cpp
-#include <unilink/unilink.hpp>
+#include <wirestead/wirestead.hpp>
 
-auto client = unilink::tcp_client("192.168.1.100", 8080)
-    .on_connect([](const unilink::ConnectionContext& ctx) {
+auto client = wirestead::tcp_client("192.168.1.100", 8080)
+    .on_connect([](const wirestead::ConnectionContext& ctx) {
         std::cout << "Connected!" << std::endl;
     })
-    .on_data([](const unilink::MessageContext& ctx) {
+    .on_data([](const wirestead::MessageContext& ctx) {
         std::cout << "Received: " << ctx.data() << std::endl;
     })
-    .on_disconnect([](const unilink::ConnectionContext& ctx) {
+    .on_disconnect([](const wirestead::ConnectionContext& ctx) {
         std::cout << "Disconnected" << std::endl;
     })
-    .on_error([](const unilink::ErrorContext& ctx) {
+    .on_error([](const wirestead::ErrorContext& ctx) {
         std::cerr << "Error: " << ctx.message() << std::endl;
     })
     .retry_interval(3000ms)  // Optional: Retry every 3 seconds (override; default is 1000ms)
@@ -255,7 +255,7 @@ client->stop();
 #### Constructor
 
 ```cpp
-unilink::tcp_client(const std::string& host, uint16_t port)
+wirestead::tcp_client(const std::string& host, uint16_t port)
 ```
 
 #### Builder Methods
@@ -293,15 +293,15 @@ unilink::tcp_client(const std::string& host, uint16_t port)
 
 ```cpp
 class MyClient {
-    std::unique_ptr<unilink::TcpClient> client_;
+    std::unique_ptr<wirestead::TcpClient> client_;
 
 public:
-    void on_data(const unilink::MessageContext& ctx) {
+    void on_data(const wirestead::MessageContext& ctx) {
         // Handle data: ctx.data()
     }
 
     void connect() {
-        client_ = unilink::tcp_client("server.com", 8080)
+        client_ = wirestead::tcp_client("server.com", 8080)
             .on_data(this, &MyClient::on_data)  // Member function!
             .on_connect(this, &MyClient::on_connect)
             .build();
@@ -313,8 +313,8 @@ public:
 
 ```cpp
 std::string device_id = "sensor_001";
-auto client = unilink::tcp_client("127.0.0.1", 8080)
-    .on_data([device_id](const unilink::MessageContext& ctx) {
+auto client = wirestead::tcp_client("127.0.0.1", 8080)
+    .on_data([device_id](const wirestead::MessageContext& ctx) {
         std::cout << "[" << device_id << "] " << ctx.data() << std::endl;
     })
     .build();
@@ -329,16 +329,16 @@ Accept multiple client connections with thread-safe operations.
 ### Basic Usage
 
 ```cpp
-#include <unilink/unilink.hpp>
+#include <wirestead/wirestead.hpp>
 
-auto server = unilink::tcp_server(8080)
-    .on_connect([](const unilink::ConnectionContext& ctx) {
+auto server = wirestead::tcp_server(8080)
+    .on_connect([](const wirestead::ConnectionContext& ctx) {
         std::cout << "Client " << ctx.client_id() << " connected from " << ctx.client_info() << std::endl;
     })
-    .on_data([](const unilink::MessageContext& ctx) {
+    .on_data([](const wirestead::MessageContext& ctx) {
         std::cout << "Client " << ctx.client_id() << ": " << ctx.data() << std::endl;
     })
-    .on_disconnect([](const unilink::ConnectionContext& ctx) {
+    .on_disconnect([](const wirestead::ConnectionContext& ctx) {
         std::cout << "Client " << ctx.client_id() << " disconnected" << std::endl;
     })
     .build();
@@ -372,7 +372,7 @@ server->stop();
 #### Constructor
 
 ```cpp
-unilink::tcp_server(uint16_t port)
+wirestead::tcp_server(uint16_t port)
 ```
 
 #### Builder Methods
@@ -383,7 +383,7 @@ unilink::tcp_server(uint16_t port)
 | `bind_address(address)`     | `string`                     | Bind to a specific network interface (e.g., "127.0.0.1")             |
 | `port_retry()`              | `bool, retries, interval_ms` | Retry if port is in use                                              |
 | `idle_timeout(ms)`          | `chrono::milliseconds`       | Close idle client sessions after inactivity (0ms = disabled)         |
-| `independent_context()`     | `bool`                       | Run on a dedicated `io_context` thread managed by unilink            |
+| `independent_context()`     | `bool`                       | Run on a dedicated `io_context` thread managed by wirestead            |
 | `auto_start()`              | `bool`                       | Auto-start immediately and stop on destruction                       |
 
 > **Note**: `single_client()` and `multi_client(max)` are deprecated in favor of `max_clients(n)`.
@@ -411,9 +411,9 @@ Multi-client callbacks use the standard `ConnectionContext` and `MessageContext`
 #### Single Client Mode
 
 ```cpp
-auto server = unilink::tcp_server(8080)
+auto server = wirestead::tcp_server(8080)
     .single_client()  // Only one client allowed
-    .on_connect([](const unilink::ConnectionContext& ctx) {
+    .on_connect([](const wirestead::ConnectionContext& ctx) {
         std::cout << "Client connected: " << ctx.client_info() << std::endl;
     })
     .build();
@@ -422,10 +422,10 @@ auto server = unilink::tcp_server(8080)
 #### Port Retry
 
 ```cpp
-auto server = unilink::tcp_server(8080)
+auto server = wirestead::tcp_server(8080)
     .single_client()
     .port_retry(true, 5, 1000)  // 5 retries, 1 second each
-    .on_error([](const unilink::ErrorContext& ctx) {
+    .on_error([](const wirestead::ErrorContext& ctx) {
         std::cerr << "Server error: " << ctx.message() << std::endl;
     })
     .build();
@@ -434,10 +434,10 @@ auto server = unilink::tcp_server(8080)
 #### Echo Server Pattern
 
 ```cpp
-auto server = unilink::tcp_server(8080)
+auto server = wirestead::tcp_server(8080)
     .build();
 
-server->on_data([&server](const unilink::MessageContext& ctx) {
+server->on_data([&server](const wirestead::MessageContext& ctx) {
     server->send_to(ctx.client_id(), "Echo: " + std::string(ctx.data()));
 });
 
@@ -453,13 +453,13 @@ Interface with serial devices and embedded systems.
 ### Basic Usage
 
 ```cpp
-#include <unilink/unilink.hpp>
+#include <wirestead/wirestead.hpp>
 
-auto serial = unilink::serial("/dev/ttyUSB0", 115200)
-    .on_connect([](const unilink::ConnectionContext& ctx) {
+auto serial = wirestead::serial("/dev/ttyUSB0", 115200)
+    .on_connect([](const wirestead::ConnectionContext& ctx) {
         std::cout << "Serial port opened" << std::endl;
     })
-    .on_data([](const unilink::MessageContext& ctx) {
+    .on_data([](const wirestead::MessageContext& ctx) {
         std::cout << "Received: " << ctx.data() << std::endl;
     })
     .build();
@@ -484,7 +484,7 @@ if (opened) {
 #### Constructor
 
 ```cpp
-unilink::serial(const std::string& device, uint32_t baud_rate)
+wirestead::serial(const std::string& device, uint32_t baud_rate)
 ```
 
 **Common Baud Rates:**
@@ -500,7 +500,7 @@ unilink::serial(const std::string& device, uint32_t baud_rate)
 | `parity(mode)`              | `string`   | Set serial parity before `build()`                        |
 | `flow_control(mode)`        | `string`   | Set flow control before `build()`                         |
 | `retry_interval(ms)`        | `unsigned` | Set reconnection interval (default `1000`)                |
-| `independent_context()`     | `bool`     | Run on a dedicated `io_context` thread managed by unilink |
+| `independent_context()`     | `bool`     | Run on a dedicated `io_context` thread managed by wirestead |
 | `auto_start()`             | `bool`     | Auto-start immediately and stop on destruction            |
 
 #### Instance Methods
@@ -541,11 +541,11 @@ unilink::serial(const std::string& device, uint32_t baud_rate)
 #### Arduino Communication
 
 ```cpp
-auto arduino = unilink::serial("/dev/ttyACM0", 9600)
-    .on_connect([](const unilink::ConnectionContext& ctx) {
+auto arduino = wirestead::serial("/dev/ttyACM0", 9600)
+    .on_connect([](const wirestead::ConnectionContext& ctx) {
         std::this_thread::sleep_for(std::chrono::seconds(2));  // Arduino reset delay
     })
-    .on_data([](const unilink::MessageContext& ctx) {
+    .on_data([](const wirestead::MessageContext& ctx) {
         // Parse sensor data
         std::string_view data = ctx.data();
         if (data.find("TEMP:") == 0) {
@@ -559,8 +559,8 @@ auto arduino = unilink::serial("/dev/ttyACM0", 9600)
 #### GPS Module
 
 ```cpp
-auto gps = unilink::serial("/dev/ttyUSB0", 9600)
-    .on_data([](const unilink::MessageContext& ctx) {
+auto gps = wirestead::serial("/dev/ttyUSB0", 9600)
+    .on_data([](const wirestead::MessageContext& ctx) {
         // Parse NMEA sentences
         if (ctx.data().find("$GPGGA") == 0) {
             // Parse GPS fix data
@@ -580,11 +580,11 @@ Connectionless communication using UDP protocol.
 #### UDP Receiver (Server)
 
 ```cpp
-#include <unilink/unilink.hpp>
+#include <wirestead/wirestead.hpp>
 
 // Create a UDP socket bound to port 8080
-auto receiver = unilink::udp_client(8080)
-    .on_data([](const unilink::MessageContext& ctx) {
+auto receiver = wirestead::udp_client(8080)
+    .on_data([](const wirestead::MessageContext& ctx) {
         std::cout << "Received: " << ctx.data() << std::endl;
     })
     .build();
@@ -601,10 +601,10 @@ if (receiver_started) {
 #### UDP Sender (Client)
 
 ```cpp
-#include <unilink/unilink.hpp>
+#include <wirestead/wirestead.hpp>
 
 // Create a UDP socket and set remote destination
-auto sender = unilink::udp_client(0)  // 0 = ephemeral port
+auto sender = wirestead::udp_client(0)  // 0 = ephemeral port
     .remote("127.0.0.1", 8080)
     .build();
 
@@ -620,10 +620,10 @@ if (sender_started) {
 
 ```cpp
 // UDP client: send and/or receive with a configured remote peer
-unilink::udp_client(uint16_t local_port)
+wirestead::udp_client(uint16_t local_port)
 
 // UDP server: receive-only listener with virtual sessions per sender
-unilink::udp_server(uint16_t local_port)
+wirestead::udp_server(uint16_t local_port)
 ```
 
 #### Builder Methods (UdpClient)
@@ -664,8 +664,8 @@ unilink::udp_server(uint16_t local_port)
 #### Echo Reply (Receiver)
 
 ```cpp
-auto socket = unilink::udp_client(8080)
-    .on_data([&](const unilink::MessageContext& ctx) {
+auto socket = wirestead::udp_client(8080)
+    .on_data([&](const wirestead::MessageContext& ctx) {
         std::cout << "Received: " << ctx.data() << std::endl;
         // Reply to the sender (automatically tracks last sender)
     })
@@ -675,8 +675,8 @@ auto socket = unilink::udp_client(8080)
 #### UDP Server (Receive-only listener)
 
 ```cpp
-auto server = unilink::udp_server(8080)
-    .on_data([](const unilink::MessageContext& ctx) {
+auto server = wirestead::udp_server(8080)
+    .on_data([](const wirestead::MessageContext& ctx) {
         std::cout << "Received: " << ctx.data() << std::endl;
     })
     .build();
@@ -695,13 +695,13 @@ High-performance local inter-process communication (IPC) using Unix Domain Socke
 #### UDS Server
 
 ```cpp
-#include <unilink/unilink.hpp>
+#include <wirestead/wirestead.hpp>
 
-auto server = unilink::uds_server("/tmp/my_service.sock")
-    .on_connect([](const unilink::ConnectionContext& ctx) {
+auto server = wirestead::uds_server("/tmp/my_service.sock")
+    .on_connect([](const wirestead::ConnectionContext& ctx) {
         std::cout << "Client connected!" << std::endl;
     })
-    .on_data([](const unilink::MessageContext& ctx) {
+    .on_data([](const wirestead::MessageContext& ctx) {
         std::cout << "Received: " << ctx.data() << std::endl;
     })
     .build();
@@ -715,10 +715,10 @@ if (!listening) {
 #### UDS Client
 
 ```cpp
-#include <unilink/unilink.hpp>
+#include <wirestead/wirestead.hpp>
 
-auto client = unilink::uds_client("/tmp/my_service.sock")
-    .on_connect([](const unilink::ConnectionContext& ctx) {
+auto client = wirestead::uds_client("/tmp/my_service.sock")
+    .on_connect([](const wirestead::ConnectionContext& ctx) {
         std::cout << "Connected to UDS server!" << std::endl;
     })
     .build();
@@ -734,8 +734,8 @@ if (connected) {
 #### Constructors
 
 ```cpp
-unilink::uds_server(const std::string& socket_path)
-unilink::uds_client(const std::string& socket_path)
+wirestead::uds_server(const std::string& socket_path)
+wirestead::uds_client(const std::string& socket_path)
 ```
 
 #### Builder Methods (UDS Server)
@@ -785,7 +785,7 @@ unilink::uds_client(const std::string& socket_path)
 
 - **Platform Support**: Unix Domain Sockets are natively supported on Linux, macOS, and recent versions of Windows 10/11.
 - **Path Length**: Socket paths are typically limited to ~108 characters (standard `sockaddr_un` limit).
-- **Cleanup**: Unilink automatically removes the socket file when the server starts and stops to ensure clean initialization.
+- **Cleanup**: Wirestead automatically removes the socket file when the server starts and stops to ensure clean initialization.
 
 ---
 
@@ -796,9 +796,9 @@ Centralized error handling system with callbacks and statistics.
 ### Setup Error Handler
 
 ```cpp
-#include "unilink/diagnostics/error_handler.hpp"
+#include "wirestead/diagnostics/error_handler.hpp"
 
-using namespace unilink::diagnostics;
+using namespace wirestead::diagnostics;
 
 // Register global error callback
 ErrorHandler::instance().register_callback([](const ErrorInfo& error) {
@@ -842,14 +842,14 @@ Flexible logging with multiple outputs and async processing.
 ### Basic Usage
 
 ```cpp
-#include "unilink/diagnostics/logger.hpp"
-#include "unilink/diagnostics/error_handler.hpp"
+#include "wirestead/diagnostics/logger.hpp"
+#include "wirestead/diagnostics/error_handler.hpp"
 
-auto& logger = unilink::diagnostics::Logger::instance();
+auto& logger = wirestead::diagnostics::Logger::instance();
 
 // Get logger instance
 // Configure logger
-logger.set_level(unilink::diagnostics::LogLevel::DEBUG);
+logger.set_level(wirestead::diagnostics::LogLevel::DEBUG);
 logger.set_console_output(true);
 if (!logger.try_set_file_output("app.log")) {
   std::cerr << logger.last_error() << std::endl;
@@ -863,8 +863,8 @@ logger.error("component", "operation", "Error message");
 logger.critical("component", "operation", "Critical message");
 
 // Macro form keeps source location at the call site and avoids formatting filtered messages
-UNILINK_LOG(unilink::diagnostics::LogLevel::INFO, "component", "operation", "Info message");
-UNILINK_LOG_INFO("component", "operation", "Info message");
+WIRESTEAD_LOG(wirestead::diagnostics::LogLevel::INFO, "component", "operation", "Info message");
+WIRESTEAD_LOG_INFO("component", "operation", "Info message");
 ```
 
 ### Log Levels
@@ -881,7 +881,7 @@ UNILINK_LOG_INFO("component", "operation", "Info message");
 
 ```cpp
 // Enable async logging for better performance
-unilink::diagnostics::AsyncLogConfig config;
+wirestead::diagnostics::AsyncLogConfig config;
 config.max_queue_size = 10000;              // Queue capacity
 config.enable_backpressure = true;          // Block when the queue is full
 config.flush_interval = std::chrono::milliseconds(1000); // Flush every 1 second
@@ -900,23 +900,23 @@ Supported placeholders are `{timestamp}`, `{level}`, `{component}`, `{operation}
 
 ### Environment
 
-`UNILINK_LOG_LEVEL` can be set to `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`, or `OFF`. The logger reads it
+`WIRESTEAD_LOG_LEVEL` can be set to `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`, or `OFF`. The logger reads it
 during initialization; call `logger.reload_from_environment()` to re-apply it later.
 
 ---
 
 ## Configuration Management
 
-_(Available when built with `UNILINK_ENABLE_CONFIG=ON`)_
+_(Available when built with `WIRESTEAD_ENABLE_CONFIG=ON`)_
 
 ### Load Configuration from File
 
 ```cpp
 #include <any>
-#include "unilink/config/config_factory.hpp"
+#include "wirestead/config/config_factory.hpp"
 
-auto config = unilink::config::ConfigFactory::create_with_defaults();
-config->load_from_file("unilink.conf");
+auto config = wirestead::config::ConfigFactory::create_with_defaults();
+config->load_from_file("wirestead.conf");
 
 auto host = std::any_cast<std::string>(config->get("tcp.client.host"));
 auto port = static_cast<uint16_t>(std::any_cast<int>(config->get("tcp.client.port")));
@@ -925,7 +925,7 @@ auto retry_interval_ms = static_cast<unsigned>(
 );
 
 // Create client from config
-auto client = unilink::tcp_client(host, port)
+auto client = wirestead::tcp_client(host, port)
     .retry_interval(retry_interval_ms)
     .build();
 ```
@@ -935,7 +935,7 @@ auto client = unilink::tcp_client(host, port)
 The current configuration manager reads simple `key=value` files.
 
 ```ini
-# unilink.conf
+# wirestead.conf
 tcp.client.host=192.168.1.100
 tcp.client.port=8080
 tcp.client.retry_interval_ms=3000
@@ -948,7 +948,7 @@ serial.baud_rate=115200
 serial.retry_interval_ms=5000
 ```
 
-Common preset keys are populated by `unilink::config::ConfigPresets` through `ConfigFactory::create_with_defaults()`.
+Common preset keys are populated by `wirestead::config::ConfigPresets` through `ConfigFactory::create_with_defaults()`.
 
 ---
 
@@ -957,8 +957,8 @@ Common preset keys are populated by `unilink::config::ConfigPresets` through `Co
 ### 1. Always Handle Errors
 
 ```cpp
-auto client = unilink::tcp_client("server.com", 8080)
-    .on_error([](const unilink::ErrorContext& ctx) {
+auto client = wirestead::tcp_client("server.com", 8080)
+    .on_error([](const wirestead::ErrorContext& ctx) {
         // Log error, notify user, etc.
     })
     .build();
@@ -968,7 +968,7 @@ auto client = unilink::tcp_client("server.com", 8080)
 
 ```cpp
 // Always use explicit start/stop for clarity
-auto client = unilink::tcp_client("127.0.0.1", 8080)
+auto client = wirestead::tcp_client("127.0.0.1", 8080)
     .on_data(handler)
     .build();
 
@@ -981,12 +981,12 @@ client->stop();   // Stop when done
 
 ```cpp
 // Fast retry for local connections
-auto local_client = unilink::tcp_client("127.0.0.1", 8080)
+auto local_client = wirestead::tcp_client("127.0.0.1", 8080)
     .retry_interval(1000ms)  // 1 second
     .build();
 
 // Slower retry for remote connections
-auto remote_client = unilink::tcp_client("remote.com", 8080)
+auto remote_client = wirestead::tcp_client("remote.com", 8080)
     .retry_interval(10000ms)  // 10 seconds
     .build();
 ```
@@ -994,20 +994,20 @@ auto remote_client = unilink::tcp_client("remote.com", 8080)
 ### 4. Enable Logging for Debugging
 
 ```cpp
-unilink::diagnostics::Logger::instance().set_level(unilink::diagnostics::LogLevel::DEBUG);
-unilink::diagnostics::Logger::instance().set_console_output(true);
+wirestead::diagnostics::Logger::instance().set_level(wirestead::diagnostics::LogLevel::DEBUG);
+wirestead::diagnostics::Logger::instance().set_console_output(true);
 ```
 
 ### 5. Use Member Functions for OOP Design
 
 ```cpp
 class MyApplication {
-    std::unique_ptr<unilink::TcpClient> client_;
+    std::unique_ptr<wirestead::TcpClient> client_;
 
-    void on_data(const unilink::MessageContext& ctx) { /* ... */ }
+    void on_data(const wirestead::MessageContext& ctx) { /* ... */ }
 
     void start() {
-        client_ = unilink::tcp_client("server.com", 8080)
+        client_ = wirestead::tcp_client("server.com", 8080)
             .on_data(this, &MyApplication::on_data)
             .build();
     }
@@ -1024,12 +1024,12 @@ Every transport already owns a dedicated `io_context` + thread by default - no f
 
 ```cpp
 // Default: this server gets its own thread, independent of anything else
-auto server = unilink::tcp_server(8080).build();
+auto server = wirestead::tcp_server(8080).build();
 
 // Only reach for shared_context(true) (TcpServer/Serial only) if you're
 // deliberately running many instances in one process and want to trade
 // per-instance parallelism for reduced thread/memory overhead:
-auto server2 = unilink::tcp_server(8081).shared_context(true).build();
+auto server2 = wirestead::tcp_server(8081).shared_context(true).build();
 
 // independent_context(true) is a different axis (a wrapper-managed
 // external io_context, e.g. for test isolation), not a shared/dedicated
@@ -1039,16 +1039,16 @@ auto server2 = unilink::tcp_server(8081).shared_context(true).build();
 ### 2. Enable Async Logging
 
 ```cpp
-unilink::diagnostics::AsyncLogConfig config;
+wirestead::diagnostics::AsyncLogConfig config;
 config.batch_size = 100;
-unilink::diagnostics::Logger::instance().set_async_logging(true, config);
+wirestead::diagnostics::Logger::instance().set_async_logging(true, config);
 ```
 
 ---
 
 ## Backpressure Strategy
 
-Backpressure controls the sender-side queue maintained by unilink. It is measured in queued outgoing bytes, not message count.
+Backpressure controls the sender-side queue maintained by wirestead. It is measured in queued outgoing bytes, not message count.
 
 Backpressure does not guarantee that the remote peer has processed the data. For UDP, backpressure only applies to the local sender-side queue because UDP has no receiver-side flow control.
 
@@ -1069,7 +1069,7 @@ When a sender produces data faster than the transport can deliver it, messages a
 
 ### Send And Backpressure Semantics
 
-`unilink` separates send acceptance, queue preservation, and remote delivery.
+`wirestead` separates send acceptance, queue preservation, and remote delivery.
 
 A successful `send()` or `try_send()` means that the payload was accepted by the local wrapper/transport send path. It does not guarantee that the remote peer has already received or processed the data.
 
@@ -1134,10 +1134,10 @@ They are different from `failed_sends`. A failed send means the new payload was 
 Set the strategy via the transport config before starting:
 
 ```cpp
-#include <unilink/unilink.hpp>
-#include "unilink/base/constants.hpp"
+#include <wirestead/wirestead.hpp>
+#include "wirestead/base/constants.hpp"
 
-using unilink::base::constants::BackpressureStrategy;
+using wirestead::base::constants::BackpressureStrategy;
 
 // TCP client — real-time sensor stream
 config::TcpClientConfig cfg;
@@ -1155,11 +1155,11 @@ client->on_backpressure([](size_t queued_bytes) {
 Or via the wrapper builder (fluent API):
 
 ```cpp
-#include <unilink/unilink.hpp>
+#include <wirestead/wirestead.hpp>
 
-auto client = unilink::tcp_client("192.168.1.10", 8080)
+auto client = wirestead::tcp_client("192.168.1.10", 8080)
     .backpressure_threshold(512 * 1024)
-    .backpressure_strategy(unilink::base::constants::BackpressureStrategy::BestEffort)
+    .backpressure_strategy(wirestead::base::constants::BackpressureStrategy::BestEffort)
     .on_backpressure([](size_t) { /* queue pressure changed */ })
     .build();
 ```
@@ -1168,7 +1168,7 @@ Configuration should normally be completed before `start()` or `auto_start(true)
 
 ### Thresholds
 
-Unilink uses **Dynamic Defaults** for the backpressure threshold based on the selected strategy. If you do not explicitly set a threshold, the following values are used:
+Wirestead uses **Dynamic Defaults** for the backpressure threshold based on the selected strategy. If you do not explicitly set a threshold, the following values are used:
 
 | Strategy | Default Threshold | Typical Use Case |
 | :--- | :--- | :--- |
@@ -1234,7 +1234,7 @@ class RateLimiter {
     }
 };
 
-server->on_data([this, &limiter](const unilink::MessageContext& ctx) {
+server->on_data([this, &limiter](const wirestead::MessageContext& ctx) {
     if (!limiter.is_allowed(ctx.client_id())) return;
     process_data(ctx.client_id(), std::string(ctx.data()));
 });
@@ -1246,7 +1246,7 @@ Use `.multi_client(N)` to cap simultaneous connections, or enforce limits manual
 
 ```cpp
 // Built-in limit via builder
-auto server = unilink::tcp_server(8080)
+auto server = wirestead::tcp_server(8080)
     .multi_client(100)  // max 100 clients
     .build();
 ```

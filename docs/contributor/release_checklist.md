@@ -1,6 +1,6 @@
 # Release Checklist {#contrib_release_checklist}
 
-Use this checklist before publishing a unilink release.
+Use this checklist before publishing a wirestead release.
 
 ## 1. Versioning
 
@@ -8,7 +8,7 @@ Use this checklist before publishing a unilink release.
 - [ ] Confirm CPack package version matches the project version
 - [ ] Confirm Git tag matches the release version
 - [ ] Confirm release notes mention breaking changes, if any
-- [ ] Confirm `unilink-python` compatibility status, if applicable
+- [ ] Confirm Wirestead Python compatibility status, if applicable
 
 ## 2. Build And Test
 
@@ -29,8 +29,8 @@ Use this checklist before publishing a unilink release.
 - [ ] Package contents include `LICENSE`
 - [ ] Package contents include `NOTICE`
 - [ ] Package contents include `README.md`
-- [ ] External CMake consumer can use `find_package(unilink CONFIG REQUIRED)`
-- [ ] External CMake consumer can link against `unilink::unilink`
+- [ ] External CMake consumer can use `find_package(wirestead CONFIG REQUIRED)`
+- [ ] External CMake consumer can link against `wirestead::wirestead`
 
 ## 4. Documentation
 
@@ -40,7 +40,7 @@ Use this checklist before publishing a unilink release.
 - [ ] API Guide matches actual builder/wrapper behavior
 - [ ] API Stability Policy is current
 - [ ] Known limitations are documented
-- [ ] Python bindings link points to `unilink-python`
+- [ ] Python bindings link points to the Wirestead Python repository
 - [ ] Examples link points to the external examples repository
 
 ## 5. Release Assets
@@ -60,7 +60,7 @@ Check that expected release assets exist.
 
 - [ ] vcpkg package status checked
 - [ ] External examples repository checked against this release
-- [ ] `unilink-python` compatibility checked, if applicable
+- [ ] Wirestead Python compatibility checked, if applicable
 - [ ] Container image compatibility checked, if applicable
 
 ## 7. Post-Release Checks

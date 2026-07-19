@@ -1,6 +1,6 @@
 # UDP Communication {#tutorial_05}
 
-This tutorial covers the basic UDP workflow in `unilink`: bind a receiver, configure a sender, and observe how the wrapper behaves with connectionless traffic.
+This tutorial covers the basic UDP workflow in `wirestead`: bind a receiver, configure a sender, and observe how the wrapper behaves with connectionless traffic.
 
 **Duration**: 10 minutes  
 **Difficulty**: Beginner to Intermediate  
@@ -23,14 +23,14 @@ A two-process UDP setup:
 <!-- doc-compile: tutorial_udp_receiver -->
 ```cpp
 #include <iostream>
-#include <unilink/unilink.hpp>
+#include <wirestead/wirestead.hpp>
 
 int main() {
-    auto receiver = unilink::udp_client(9000)
-        .on_data([](const unilink::MessageContext& ctx) {
+    auto receiver = wirestead::udp_client(9000)
+        .on_data([](const wirestead::MessageContext& ctx) {
             std::cout << "[RX] " << ctx.data() << std::endl;
         })
-        .on_error([](const unilink::ErrorContext& ctx) {
+        .on_error([](const wirestead::ErrorContext& ctx) {
             std::cerr << "[ERROR] " << ctx.message() << std::endl;
         })
         .build();
@@ -55,15 +55,15 @@ int main() {
 ```cpp
 #include <iostream>
 #include <string>
-#include <unilink/unilink.hpp>
+#include <wirestead/wirestead.hpp>
 
 int main() {
-    auto sender = unilink::udp_client(0)
+    auto sender = wirestead::udp_client(0)
         .remote("127.0.0.1", 9000)
-        .on_connect([](const unilink::ConnectionContext&) {
+        .on_connect([](const wirestead::ConnectionContext&) {
             std::cout << "UDP sender ready" << std::endl;
         })
-        .on_error([](const unilink::ErrorContext& ctx) {
+        .on_error([](const wirestead::ErrorContext& ctx) {
             std::cerr << "[ERROR] " << ctx.message() << std::endl;
         })
         .build();
@@ -89,8 +89,8 @@ int main() {
 If you saved the snippets as `udp_receiver.cpp` and `udp_sender.cpp`:
 
 ```bash
-g++ -std=c++20 udp_receiver.cpp -o udp_receiver -lunilink -lboost_system -pthread
-g++ -std=c++20 udp_sender.cpp -o udp_sender -lunilink -lboost_system -pthread
+g++ -std=c++20 udp_receiver.cpp -o udp_receiver -lwirestead -lboost_system -pthread
+g++ -std=c++20 udp_sender.cpp -o udp_sender -lwirestead -lboost_system -pthread
 ```
 
 ---
@@ -128,7 +128,7 @@ For simple local tests, UDP is useful when you want low overhead and can tolerat
 
 ## Practical Notes
 
-- `unilink::udp_client(0)` uses an ephemeral local port for the sender.
+- `wirestead::udp_client(0)` uses an ephemeral local port for the sender.
 - `remote(host, port)` configures the default destination for `send()`.
 - The receiver can run without a predefined remote peer.
 - If you need more operational examples, the protocol-specific examples are richer than this tutorial.
@@ -139,7 +139,7 @@ For simple local tests, UDP is useful when you want low overhead and can tolerat
 
 For ready-to-run maintained examples, use:
 
-- [unilink-lab/unilink-examples](https://github.com/unilink-lab/unilink-examples)
+- [Wirestead examples repository](https://github.com/wirestead/unilink-examples)
 
 ---
 
