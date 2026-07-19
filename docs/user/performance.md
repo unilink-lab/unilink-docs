@@ -1,6 +1,6 @@
 # Performance Guide {#user_performance}
 
-This guide covers performance optimization strategies for `unilink`.
+This guide covers performance optimization strategies for `wirestead`.
 
 ---
 
@@ -17,16 +17,16 @@ This guide covers performance optimization strategies for `unilink`.
 ### 1. Threading Model & IO Context
 
 **Use Shared IO Context (Default)**
-Unilink defaults to a shared IO context model, which is highly efficient for most use cases.
+Wirestead defaults to a shared IO context model, which is highly efficient for most use cases.
 
 ```cpp
 // ✅ GOOD: Shared context (efficient)
-auto client1 = unilink::tcp_client("server1.com", 8080).build();
-auto client2 = unilink::tcp_client("server2.com", 8080).build();
+auto client1 = wirestead::tcp_client("server1.com", 8080).build();
+auto client2 = wirestead::tcp_client("server2.com", 8080).build();
 // All share ONE I/O thread - efficient!
 
 // ❌ BAD: Independent contexts (wasteful)
-auto client1 = unilink::tcp_client("server1.com", 8080)
+auto client1 = wirestead::tcp_client("server1.com", 8080)
     .independent_context(true)  // Creates dedicated thread
     .build();
 ```
@@ -37,11 +37,11 @@ Logging can be a major bottleneck. Enable async logging for high-performance app
 
 ```cpp
 // ✅ GOOD: Async logging (non-blocking)
-unilink::diagnostics::AsyncLogConfig config;
+wirestead::diagnostics::AsyncLogConfig config;
 config.batch_size = 1000;
 config.flush_interval = std::chrono::milliseconds(1000);
 
-unilink::diagnostics::Logger::instance().set_async_logging(true, config);
+wirestead::diagnostics::Logger::instance().set_async_logging(true, config);
 ```
 
 ### 3. Non-Blocking Callbacks
@@ -50,13 +50,13 @@ Never perform heavy computation or blocking operations (like `sleep`) inside cal
 
 ```cpp
 // ❌ BAD: Blocking I/O thread
-.on_data([](const unilink::MessageContext& ctx) {
+.on_data([](const wirestead::MessageContext& ctx) {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
     process_data(ctx.data());
 })
 
 // ✅ GOOD: Offload to worker thread/pool
-.on_data([&thread_pool](const unilink::MessageContext& ctx) {
+.on_data([&thread_pool](const wirestead::MessageContext& ctx) {
     std::string payload(ctx.data());
     thread_pool.submit([payload = std::move(payload)]() {
         process_data(payload);
@@ -83,7 +83,7 @@ void parse(std::string_view msg) { ... }
 For large binary payloads, prefer move/shared send APIs when available:
 
 - `send_move(...)` transfers vector ownership into the send path.
-- `send_shared(...)` shares immutable payload ownership with unilink.
+- `send_shared(...)` shares immutable payload ownership with wirestead.
 - `try_send_move(...)` and `try_send_shared(...)` provide non-blocking variants.
 
 After calling `send_move(...)` or `try_send_move(...)`, treat the moved vector as consumed regardless of the return value.
@@ -122,7 +122,7 @@ Reusing connections avoids repeated TCP handshake and connection setup overhead.
 Use builder-level socket tuning first. Socket tuning is workload-dependent and does not guarantee higher throughput or lower latency for every application.
 
 ```cpp
-auto client = unilink::tcp_client("127.0.0.1", 8080)
+auto client = wirestead::tcp_client("127.0.0.1", 8080)
     .tcp_no_delay(true)
     .send_buffer_size(4 * 1024 * 1024)
     .receive_buffer_size(4 * 1024 * 1024)
@@ -142,11 +142,11 @@ sudo sysctl -w net.core.wmem_max=16777216  # 16 MB (OS limit)
 
 ## Backpressure Management {#backpressure-management}
 
-When the data generation rate exceeds the network's transmission capacity, Unilink's internal send queues grow. Managing this "backpressure" is critical for stability and latency.
+When the data generation rate exceeds the network's transmission capacity, Wirestead's internal send queues grow. Managing this "backpressure" is critical for stability and latency.
 
 ### 1. Choosing a Strategy
 
-Unilink provides two strategies for handling full queues:
+Wirestead provides two strategies for handling full queues:
 
 | Strategy | Behavior | Best For |
 |:---|:---|:---|
@@ -185,14 +185,14 @@ For robotics perception, processing stale data is often worse than skipping fram
 
 ```cpp
 // 🤖 Best configuration for robotics sensors
-auto lidar = unilink::tcp_client("192.168.1.10", 2368)
-    .backpressure_strategy(unilink::base::constants::BackpressureStrategy::BestEffort)
+auto lidar = wirestead::tcp_client("192.168.1.10", 2368)
+    .backpressure_strategy(wirestead::base::constants::BackpressureStrategy::BestEffort)
     .backpressure_threshold(1024 * 512)  // 0.5 MB threshold
     .build();
 ```
 
 Python-specific performance notes are maintained in
-[unilink-lab/unilink-python](https://github.com/unilink-lab/unilink-python).
+[Wirestead Python repository](https://github.com/wirestead/unilink-python).
 
 Aggressive flushing during network disconnects ensures that once reconnection
 occurs, the receiver instantly gets the most recent frame instead of waiting for

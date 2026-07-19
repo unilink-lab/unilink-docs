@@ -1,6 +1,6 @@
 # System Requirements {#user_requirements}
 
-This guide describes the system requirements and dependencies needed to build and use `unilink`.
+This guide describes the system requirements and dependencies needed to build and use `wirestead`.
 
 ---
 
@@ -35,7 +35,7 @@ This guide describes the system requirements and dependencies needed to build an
 For most application consumers, install the packaged library:
 
 ```bash
-vcpkg install jwsung91-unilink
+vcpkg install wirestead
 ```
 
 Source builds need the underlying third-party dependencies:
@@ -84,9 +84,9 @@ apt Boost packages do not satisfy this baseline.
 
 ## Runtime Requirements
 
-### For Applications Using unilink
+### For Applications Using wirestead
 
-Applications must be able to resolve the same Boost 1.83.0+ dependency set used to build `unilink`. vcpkg consumers get this through the vcpkg toolchain; source/package consumers should provide a compatible Boost installation through their package environment.
+Applications must be able to resolve the same Boost 1.83.0+ dependency set used to build `wirestead`. vcpkg consumers get this through the vcpkg toolchain; source/package consumers should provide a compatible Boost installation through their package environment.
 
 ### Thread Support
 
@@ -109,8 +109,8 @@ Applications must be able to resolve the same Boost 1.83.0+ dependency set used 
 - Validated on Jetson Orin Nano with Ubuntu 22.04 on `aarch64`
 - Current secondary validation target: Ubuntu 24.04 on `aarch64`
 - Full C++ test sweep passed on the Orin Nano testbed: 481 tests passed, 0 failed
-- Python binding validation now belongs to the unilink-python repository
-- ARM64 release packaging validation passed, including installed-package consumer smoke via `find_package(unilink)` and `unilink::unilink`
+- Python binding validation now belongs to the Wirestead Python repository
+- ARM64 release packaging validation passed, including installed-package consumer smoke via `find_package(wirestead)` and `wirestead::wirestead`
 - One test remains intentionally disabled in that run: `UdsErrorTest.ServerStopWithActiveSessions`
 - Serial integration tests require `socat` or physical loopback hardware
 
@@ -208,6 +208,6 @@ sudo apt install cmake
 
 ## Next Steps
 
-- [Quick Start Guide](quickstart.md) - Get started with unilink
+- [Quick Start Guide](quickstart.md) - Get started with wirestead
 - [Installation Guide](installation.md) - Installation options
 - [Troubleshooting](troubleshooting.md) - Common issues and solutions

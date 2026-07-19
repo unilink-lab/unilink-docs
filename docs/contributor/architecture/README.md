@@ -1,6 +1,6 @@
-# Unilink System Architecture {#contrib_arch}
+# Wirestead System Architecture {#contrib_arch}
 
-Comprehensive overview of unilink's architecture and design principles.
+Comprehensive overview of wirestead's architecture and design principles.
 
 **Scope note:** This section mixes public high-level concepts with internal implementation details. For exact application-facing APIs, prefer `docs/user/api_guide.md`. For transport-internal contracts, prefer `docs/contributor/architecture/channel_contract.md`. For wrapper-layer behavioral guarantees, prefer `docs/contributor/architecture/wrapper_contract.md`.
 
@@ -21,7 +21,7 @@ Comprehensive overview of unilink's architecture and design principles.
 
 ## Overview
 
-Unilink is designed as a layered, modular communication library with clear separation of concerns. The architecture follows SOLID principles and employs modern C++ design patterns.
+Wirestead is designed as a layered, modular communication library with clear separation of concerns. The architecture follows SOLID principles and employs modern C++ design patterns.
 
 ### Design Goals
 
@@ -98,7 +98,7 @@ graph TD
 ### 1. Builder System
 
 ```cpp
-namespace unilink::builder {
+namespace wirestead::builder {
     // Base interface (CRTP: T = product type, Derived = builder type)
     template<typename T, typename Derived>
     class BuilderInterface { ... };
@@ -124,7 +124,7 @@ namespace unilink::builder {
 ### 2. Wrapper System
 
 ```cpp
-namespace unilink::wrapper {
+namespace wirestead::wrapper {
     class ChannelInterface {
         virtual std::future<bool> start() = 0;
         virtual void stop() = 0;
@@ -160,7 +160,7 @@ namespace unilink::wrapper {
 ### 3. Transport System
 
 ```cpp
-namespace unilink::transport {
+namespace wirestead::transport {
     // TCP transport
     class TcpClient { ... };
     class TcpServer { ... };
@@ -181,7 +181,7 @@ namespace unilink::transport {
 ### 4. Common Utilities
 
 ```cpp
-namespace unilink {
+namespace wirestead {
 namespace concurrency {
     template<typename T> class ThreadSafeState;
     template<typename T> class AtomicState;
@@ -362,7 +362,7 @@ client->stop();         // Thread 3
 Callbacks are executed in the I/O thread context:
 
 ```cpp
-.on_data([](const unilink::MessageContext& ctx) {
+.on_data([](const wirestead::MessageContext& ctx) {
     // This runs in the I/O thread.
     // Don't block here!
 });
@@ -476,7 +476,7 @@ if (pooled.valid()) {
 Debug memory leaks:
 
 ```cpp
-#ifdef UNILINK_ENABLE_MEMORY_TRACKING
+#ifdef WIRESTEAD_ENABLE_MEMORY_TRACKING
 class MemoryTracker {
     void track_allocation(void* ptr, size_t size);
     void track_deallocation(void* ptr);
@@ -549,10 +549,10 @@ Two built-in factory functions are provided:
 
 ```cpp
 // Fixed interval (default behavior via builder .retry_interval())
-unilink::FixedInterval(std::chrono::milliseconds delay);
+wirestead::FixedInterval(std::chrono::milliseconds delay);
 
 // Exponential backoff with optional jitter (transport layer only)
-unilink::ExponentialBackoff(min_delay, max_delay, factor, jitter);
+wirestead::ExponentialBackoff(min_delay, max_delay, factor, jitter);
 ```
 
 The wrapper-layer default is a fixed 1-second interval. Exponential backoff requires dropping to the transport layer directly (see api_guide.md – Custom Reconnect Policy).
@@ -564,15 +564,15 @@ The wrapper-layer default is a fixed 1-second interval. Exponential backoff requ
 ### Compile-Time Configuration
 
 ```cpp
-// CMake option: UNILINK_ENABLE_CONFIG
-#ifdef UNILINK_ENABLE_CONFIG
+// CMake option: WIRESTEAD_ENABLE_CONFIG
+#ifdef WIRESTEAD_ENABLE_CONFIG
 namespace config {
     class ConfigManager { ... };
 }
 #endif
 
-// CMake option: UNILINK_ENABLE_MEMORY_TRACKING
-#ifdef UNILINK_ENABLE_MEMORY_TRACKING
+// CMake option: WIRESTEAD_ENABLE_MEMORY_TRACKING
+#ifdef WIRESTEAD_ENABLE_MEMORY_TRACKING
 class MemoryTracker { ... };
 #endif
 ```
@@ -580,15 +580,15 @@ class MemoryTracker { ... };
 ### Runtime Configuration
 
 ```cpp
-#include "unilink/config/config_factory.hpp"
+#include "wirestead/config/config_factory.hpp"
 
-auto config = unilink::config::ConfigFactory::create_with_defaults();
-config->load_from_file("unilink.conf");
+auto config = wirestead::config::ConfigFactory::create_with_defaults();
+config->load_from_file("wirestead.conf");
 
 auto host = std::any_cast<std::string>(config->get("tcp.client.host"));
 auto port = static_cast<uint16_t>(std::any_cast<int>(config->get("tcp.client.port")));
 
-auto client = unilink::tcp_client(host, port)
+auto client = wirestead::tcp_client(host, port)
     .retry_interval(static_cast<unsigned>(
         std::any_cast<int>(config->get("tcp.client.retry_interval_ms"))
     ))
@@ -617,7 +617,7 @@ void send(std::string_view data);  // View (no copy)
 
 ```cpp
 // Avoid repeated allocations
-unilink::memory::MemoryPool buffer_pool_;
+wirestead::memory::MemoryPool buffer_pool_;
 auto buffer = buffer_pool_.acquire(1024);  // Fast!
 ```
 
@@ -663,8 +663,8 @@ ErrorHandler::instance().register_callback([](const ErrorInfo& error) {
 
 ### Documentation Generation
 
-Generate API documentation from the `unilink-docs` repository. The docs
-workflow checks out the core repository under `external/unilink` and runs
+Generate API documentation from this documentation repository. The docs
+workflow checks out the core repository under `external/wirestead` and runs
 Doxygen from this repository.
 
 ```bash
@@ -711,7 +711,7 @@ ASSERT_TRUE(server->listening());
 
 ## Summary
 
-Unilink's architecture emphasizes:
+Wirestead's architecture emphasizes:
 
 ✅ **Modularity** - Clear separation of concerns  
 ✅ **Safety** - Memory-safe, thread-safe operations  

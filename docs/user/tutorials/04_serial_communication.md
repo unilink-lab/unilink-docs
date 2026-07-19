@@ -1,6 +1,6 @@
 # Serial Communication {#tutorial_04}
 
-This tutorial walks through a practical serial workflow with `unilink`: open a device, receive lines, send commands, and test locally with virtual ports before connecting real hardware.
+This tutorial walks through a practical serial workflow with `wirestead`: open a device, receive lines, send commands, and test locally with virtual ports before connecting real hardware.
 
 **Duration**: 15 minutes  
 **Difficulty**: Beginner to Intermediate  
@@ -44,7 +44,7 @@ This creates two connected ports, `/tmp/ttyA` and `/tmp/ttyB`.
 #include <iostream>
 #include <chrono>
 #include <string>
-#include <unilink/unilink.hpp>
+#include <wirestead/wirestead.hpp>
 
 using namespace std::chrono_literals;
 
@@ -52,17 +52,17 @@ int main(int argc, char** argv) {
     std::string device = (argc > 1) ? argv[1] : "/dev/ttyUSB0";
     uint32_t baud = (argc > 2) ? static_cast<uint32_t>(std::stoul(argv[2])) : 115200;
 
-    auto serial = unilink::serial(device, baud)
-        .on_connect([](const unilink::ConnectionContext&) {
+    auto serial = wirestead::serial(device, baud)
+        .on_connect([](const wirestead::ConnectionContext&) {
             std::cout << "Serial port opened" << std::endl;
         })
-        .on_disconnect([](const unilink::ConnectionContext&) {
+        .on_disconnect([](const wirestead::ConnectionContext&) {
             std::cout << "Serial port closed" << std::endl;
         })
-        .on_data([](const unilink::MessageContext& ctx) {
+        .on_data([](const wirestead::MessageContext& ctx) {
             std::cout << "[RX] " << ctx.data() << std::endl;
         })
-        .on_error([](const unilink::ErrorContext& ctx) {
+        .on_error([](const wirestead::ErrorContext& ctx) {
             std::cerr << "[ERROR] " << ctx.message() << std::endl;
         })
         .build();
@@ -92,7 +92,7 @@ int main(int argc, char** argv) {
 ## Step 3: Build And Run
 
 ```bash
-g++ -std=c++20 serial_terminal.cpp -o serial_terminal -lunilink -lboost_system -pthread
+g++ -std=c++20 serial_terminal.cpp -o serial_terminal -lwirestead -lboost_system -pthread
 ```
 
 Run against a real device:
@@ -135,7 +135,7 @@ You can tune the serial wrapper before `build()`:
 
 ```cpp
 using namespace std::chrono_literals;
-auto serial = unilink::serial("/dev/ttyUSB0", 115200)
+auto serial = wirestead::serial("/dev/ttyUSB0", 115200)
     .retry_interval(1000ms)
     .build();
 ```
@@ -156,7 +156,7 @@ serial->flow_control("none");
 
 If you want a fuller interactive sample, use the external examples repository:
 
-- [unilink-lab/unilink-examples](https://github.com/unilink-lab/unilink-examples)
+- [Wirestead examples repository](https://github.com/wirestead/unilink-examples)
 
 Those examples are a better fit for device bring-up and manual testing than this short tutorial.
 
@@ -166,7 +166,7 @@ Those examples are a better fit for device bring-up and manual testing than this
 
 - [UDP Communication](05_udp_communication.md)
 - [API Reference](../api_guide.md#serial-communication)
-- [Examples Repository](https://github.com/unilink-lab/unilink-examples)
+- [Examples Repository](https://github.com/wirestead/unilink-examples)
 
 ---
 

@@ -52,7 +52,7 @@ Current behavior:
 ### Type Definitions
 
 ```cpp
-namespace unilink {
+namespace wirestead {
 
 enum class SendStatus {
   Queued,
@@ -86,7 +86,7 @@ struct SendResult {
   }
 };
 
-}  // namespace unilink
+}  // namespace wirestead
 ```
 
 ### API Names

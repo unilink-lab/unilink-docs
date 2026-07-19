@@ -1,16 +1,16 @@
-# unilink Logo Assets
+# wirestead Logo Assets
 
-This directory contains the current unilink brand logo assets.
+This directory contains the current wirestead brand logo assets.
 
 ## Files
 
-- `light/unilink-logo-horizontal.png`: Main logo for README and documentation headers on light backgrounds.
-- `dark/unilink-logo-horizontal.png`: Main logo for documentation headers on dark backgrounds.
-- `light/unilink-logo-horizontal-readme-light.png`: README-sized horizontal logo for GitHub light mode.
-- `dark/unilink-logo-horizontal-readme-dark.png`: README-sized horizontal logo for GitHub dark mode.
-- `light/unilink-logo.png`: Symbol or mark logo for light backgrounds.
-- `dark/unilink-logo.png`: Symbol or mark logo for dark backgrounds.
-- `guide/unilink-brand-guide.png`: Reference image for the brand guide and CI usage.
+- `light/wirestead-logo-horizontal.png`: Main logo for README and documentation headers on light backgrounds.
+- `dark/wirestead-logo-horizontal.png`: Main logo for documentation headers on dark backgrounds.
+- `light/wirestead-logo-horizontal-readme-light.png`: README-sized horizontal logo for GitHub light mode.
+- `dark/wirestead-logo-horizontal-readme-dark.png`: README-sized horizontal logo for GitHub dark mode.
+- `light/wirestead-logo.png`: Symbol or mark logo for light backgrounds.
+- `dark/wirestead-logo.png`: Symbol or mark logo for dark backgrounds.
+- `guide/wirestead-brand-guide.png`: Reference image for the brand guide and CI usage.
 
 ## Usage
 

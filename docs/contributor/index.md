@@ -1,6 +1,6 @@
 # Contributor Guide {#contrib_index}
 
-Documentation for developers building, extending, or contributing to unilink itself.
+Documentation for developers building, extending, or contributing to wirestead itself.
 
 ---
 

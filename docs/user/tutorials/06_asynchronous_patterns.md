@@ -1,6 +1,6 @@
 # Asynchronous Programming Patterns {#user_tutorial_async}
 
-Unilink is designed as an asynchronous, event-driven library from the ground up. While `start_sync()` is available for convenience, mastering asynchronous patterns is key to building high-performance applications.
+Wirestead is designed as an asynchronous, event-driven library from the ground up. While `start_sync()` is available for convenience, mastering asynchronous patterns is key to building high-performance applications.
 
 ---
 
@@ -11,11 +11,11 @@ When you call `start()`, the library initiates the connection process (for clien
 ### The Async Pattern
 
 ```cpp
-auto client = unilink::tcp_client("127.0.0.1", 8080)
-    .on_connect([](const unilink::ConnectionContext& ctx) {
+auto client = wirestead::tcp_client("127.0.0.1", 8080)
+    .on_connect([](const wirestead::ConnectionContext& ctx) {
         std::cout << "Connected! This fires from a background thread." << std::endl;
     })
-    .on_error([](const unilink::ErrorContext& ctx) {
+    .on_error([](const wirestead::ErrorContext& ctx) {
         std::cerr << "Error: " << ctx.message() << std::endl;
     })
     .build();
@@ -39,11 +39,11 @@ The recommended way is to use `std::shared_ptr` and capture it by value or refer
 
 ```cpp
 // 1. Declare a shared pointer
-std::shared_ptr<unilink::wrapper::TcpClient> client;
+std::shared_ptr<wirestead::wrapper::TcpClient> client;
 
 // 2. Capture the pointer in the builder (using a reference to the shared_ptr variable)
-auto builder = unilink::tcp_client("127.0.0.1", 8080)
-    .on_connect([&client](const unilink::ConnectionContext&) {
+auto builder = wirestead::tcp_client("127.0.0.1", 8080)
+    .on_connect([&client](const wirestead::ConnectionContext&) {
         // Safe to use client here because it's captured
         client->send("System Online");
     });
@@ -60,9 +60,9 @@ client->start();
 Asynchronous startup allows you to initialize multiple connections simultaneously without waiting for each one to complete sequentially.
 
 ```cpp
-auto sensor1 = unilink::serial("/dev/ttyUSB0", 115200).build();
-auto sensor2 = unilink::serial("/dev/ttyUSB1", 115200).build();
-auto cloud_link = unilink::tcp_client("api.mycloud.com", 80).build();
+auto sensor1 = wirestead::serial("/dev/ttyUSB0", 115200).build();
+auto sensor2 = wirestead::serial("/dev/ttyUSB1", 115200).build();
+auto cloud_link = wirestead::tcp_client("api.mycloud.com", 80).build();
 
 // Start all three at once
 sensor1->start();

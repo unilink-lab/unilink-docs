@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Generate documentation for unilink library
+# Generate documentation for wirestead library
 # This script automates the documentation generation process
 
 set -e  # Exit on any error
@@ -29,7 +29,7 @@ if [ ! -f "doxygen/Doxyfile" ]; then
 fi
 
 if ! command -v python3 &> /dev/null; then
-    echo "❌ python3 is required to read the project version from external/unilink/CMakeLists.txt"
+    echo "❌ python3 is required to read the project version from external/wirestead/CMakeLists.txt"
     exit 1
 fi
 
@@ -37,7 +37,7 @@ PROJECT_VERSION=$(python3 - <<'PY'
 import pathlib
 import re
 
-cmake_lists = pathlib.Path("external/unilink/CMakeLists.txt")
+cmake_lists = pathlib.Path("external/wirestead/CMakeLists.txt")
 if not cmake_lists.exists():
     print("")
     raise SystemExit
@@ -51,7 +51,7 @@ PY
 )
 
 if [ -z "$PROJECT_VERSION" ]; then
-    echo "⚠️ Could not find project version in external/unilink/CMakeLists.txt, defaulting to 0.0.0"
+    echo "⚠️ Could not find project version in external/wirestead/CMakeLists.txt, defaulting to 0.0.0"
     PROJECT_VERSION="0.0.0"
 fi
 

@@ -1,6 +1,6 @@
 # Build Guide {#contrib_build}
 
-Complete guide for building `unilink` with different configurations and platforms.
+Complete guide for building `wirestead` with different configurations and platforms.
 
 **Note:** For installation instructions, see [Installation Guide](../user/installation.md).
 
@@ -34,10 +34,10 @@ cmake --build --preset dev-linux-x64
 sudo cmake --install build/dev-linux-x64
 
 # 4. (Optional) Install to custom prefix
-cmake --install build/dev-linux-x64 --prefix /opt/unilink
+cmake --install build/dev-linux-x64 --prefix /opt/wirestead
 ```
 
-The repository intentionally does not use a root `vcpkg.json` manifest. Dependency packages are installed explicitly by the setup script and CI actions, while CMake owns the Boost baseline through `UNILINK_MIN_BOOST_VERSION`.
+The repository intentionally does not use a root `vcpkg.json` manifest. Dependency packages are installed explicitly by the setup script and CI actions, while CMake owns the Boost baseline through `WIRESTEAD_MIN_BOOST_VERSION`.
 For contributor builds, `./scripts/setup_dev_env.sh` uses an untracked repository-local `vcpkg/` checkout by default. It is disposable and can be deleted when you need to reclaim space; rerun the script to recreate it. Set `VCPKG_ROOT` before running the script to reuse an external vcpkg checkout.
 The preset-based contributor workflow requires CMake 3.21+ because `CMakePresets.json` uses schema version 3. Plain source builds without presets remain supported on CMake 3.12+.
 
@@ -45,10 +45,10 @@ The preset-based contributor workflow requires CMake 3.21+ because `CMakePresets
 
 ## Important Build Notes
 
-To enhance build stability and reliability, `unilink`'s `CMakeLists.txt` no longer uses automatic file discovery (globbing). Source and header files are now explicitly listed.
+To enhance build stability and reliability, `wirestead`'s `CMakeLists.txt` no longer uses automatic file discovery (globbing). Source and header files are now explicitly listed.
 
 **Action Required for New Files:**
-When adding or removing `.cc` or `.hpp` files in the `unilink/` directory, you **must manually update** the `UNILINK_SOURCES` or `UNILINK_HEADERS` variables in the project's root `CMakeLists.txt` file. Failure to do so will result in build errors (e.g., missing symbols).
+When adding or removing `.cc` or `.hpp` files in the `wirestead/` directory, you **must manually update** the `WIRESTEAD_SOURCES` or `WIRESTEAD_HEADERS` variables in the project's root `CMakeLists.txt` file. Failure to do so will result in build errors (e.g., missing symbols).
 
 ---
 
@@ -64,7 +64,7 @@ You can build the library with different configurations to optimize for your use
 # Configure for minimal footprint (excludes Configuration Management API)
 cmake -S . -B build \
   -DCMAKE_BUILD_TYPE=Release \
-  -DUNILINK_ENABLE_CONFIG=OFF
+  -DWIRESTEAD_ENABLE_CONFIG=OFF
 
 # Build
 cmake --build build -j
@@ -93,7 +93,7 @@ Includes advanced configuration management features for dynamic or file-based co
 # Configure with all features (includes Configuration Management API)
 cmake -S . -B build \
   -DCMAKE_BUILD_TYPE=Release \
-  -DUNILINK_ENABLE_CONFIG=ON
+  -DWIRESTEAD_ENABLE_CONFIG=ON
 
 # Build
 cmake --build build -j
@@ -121,18 +121,18 @@ cmake --build build -j
 | Option                   | Default   | Description                                      |
 | ------------------------ | --------- | ------------------------------------------------ |
 | `CMAKE_BUILD_TYPE`       | `Release` | Build type: `Release`, `Debug`, `RelWithDebInfo` |
-| `UNILINK_BUILD_SHARED`   | `ON`      | Build shared library                             |
-| `UNILINK_BUILD_STATIC`   | `ON`      | Build static library                             |
-| `UNILINK_BUILD_TESTS`    | `ON`      | Build tests                                      |
-| `UNILINK_BUILD_DOCS`     | `OFF`     | Legacy core option; documentation is generated from `unilink-docs` |
-| `UNILINK_ENABLE_CONFIG`  | `ON`      | Enable configuration management API              |
+| `WIRESTEAD_BUILD_SHARED`   | `ON`      | Build shared library                             |
+| `WIRESTEAD_BUILD_STATIC`   | `ON`      | Build static library                             |
+| `WIRESTEAD_BUILD_TESTS`    | `ON`      | Build tests                                      |
+| `WIRESTEAD_BUILD_DOCS`     | `OFF`     | Legacy core option; documentation is generated from this documentation repository |
+| `WIRESTEAD_ENABLE_CONFIG`  | `ON`      | Enable configuration management API              |
 
 ### Development Options
 
 | Option                             | Default | Description                                  |
 | ---------------------------------- | ------- | -------------------------------------------- |
-| `UNILINK_ENABLE_MEMORY_TRACKING`   | `OFF`   | Enable memory tracking for debugging         |
-| `UNILINK_ENABLE_SANITIZERS`        | `OFF`   | Enable AddressSanitizer and other sanitizers |
+| `WIRESTEAD_ENABLE_MEMORY_TRACKING`   | `OFF`   | Enable memory tracking for debugging         |
+| `WIRESTEAD_ENABLE_SANITIZERS`        | `OFF`   | Enable AddressSanitizer and other sanitizers |
 | `CMAKE_EXPORT_COMPILE_COMMANDS`    | `OFF`   | Generate `compile_commands.json` for IDEs    |
 
 ### Installation Options
@@ -140,8 +140,8 @@ cmake --build build -j
 | Option                     | Default      | Description                       |
 | -------------------------- | ------------ | --------------------------------- |
 | `CMAKE_INSTALL_PREFIX`     | `/usr/local` | Installation directory            |
-| `UNILINK_ENABLE_INSTALL`   | `ON`         | Enable install and export targets |
-| `UNILINK_ENABLE_PKGCONFIG` | `ON`         | Install `unilink.pc`              |
+| `WIRESTEAD_ENABLE_INSTALL`   | `ON`         | Enable install and export targets |
+| `WIRESTEAD_ENABLE_PKGCONFIG` | `ON`         | Install `wirestead.pc`              |
 
 ---
 
@@ -201,8 +201,8 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=RelWithDebInfo
 ```bash
 cmake -S . -B build \
   -DCMAKE_BUILD_TYPE=Release \
-  -DUNILINK_ENABLE_CONFIG=OFF \
-  -DUNILINK_BUILD_TESTS=OFF
+  -DWIRESTEAD_ENABLE_CONFIG=OFF \
+  -DWIRESTEAD_BUILD_TESTS=OFF
 
 cmake --build build -j
 sudo cmake --install build
@@ -215,9 +215,9 @@ sudo cmake --install build
 ```bash
 cmake -S . -B build \
   -DCMAKE_BUILD_TYPE=Debug \
-  -DUNILINK_ENABLE_CONFIG=ON \
-  -DUNILINK_BUILD_TESTS=ON \
-  -DUNILINK_ENABLE_MEMORY_TRACKING=ON
+  -DWIRESTEAD_ENABLE_CONFIG=ON \
+  -DWIRESTEAD_BUILD_TESTS=ON \
+  -DWIRESTEAD_ENABLE_MEMORY_TRACKING=ON
 
 cmake --build build -j
 ```
@@ -229,9 +229,9 @@ cmake --build build -j
 ```bash
 cmake -S . -B build \
   -DCMAKE_BUILD_TYPE=Debug \
-  -DUNILINK_ENABLE_CONFIG=ON \
-  -DUNILINK_BUILD_TESTS=ON \
-  -DUNILINK_ENABLE_SANITIZERS=ON
+  -DWIRESTEAD_ENABLE_CONFIG=ON \
+  -DWIRESTEAD_BUILD_TESTS=ON \
+  -DWIRESTEAD_ENABLE_SANITIZERS=ON
 
 cmake --build build -j
 
@@ -334,8 +334,8 @@ export CXX=g++-10
 cmake -S . -B build \
   -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_CXX_STANDARD=20 \
-  -DUNILINK_ENABLE_CONFIG=ON \
-  -DUNILINK_BUILD_TESTS=ON \
+  -DWIRESTEAD_ENABLE_CONFIG=ON \
+  -DWIRESTEAD_BUILD_TESTS=ON \
   -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake"
 
 # 3. Build
@@ -456,8 +456,8 @@ cmake --build build -j
 # Install (requires root)
 sudo cmake --install build
 
-# Library installed to: /usr/local/lib/libunilink.so
-# Headers installed to: /usr/local/include/unilink/
+# Library installed to: /usr/local/lib/libwirestead.so
+# Headers installed to: /usr/local/include/wirestead/
 ```
 
 ### Custom Installation Directory
@@ -498,7 +498,7 @@ ctest --test-dir build --output-on-failure -L unit_common_fast
 ### Check Library Symbols
 
 ```bash
-nm -D build/lib/libunilink.so | grep unilink
+nm -D build/lib/libwirestead.so | grep wirestead
 ```
 
 ---
@@ -553,7 +553,7 @@ cmake --install build
 
 ## CMake Package Integration
 
-After building and installing unilink, you can use it in your projects through CMake's package system.
+After building and installing wirestead, you can use it in your projects through CMake's package system.
 
 ### Using the Installed Package
 
@@ -562,14 +562,14 @@ After building and installing unilink, you can use it in your projects through C
 cmake_minimum_required(VERSION 3.12)
 project(my_app CXX)
 
-# Find the unilink package
-find_package(unilink CONFIG REQUIRED)
+# Find the wirestead package
+find_package(wirestead CONFIG REQUIRED)
 
 # Create your executable
 add_executable(my_app main.cpp)
 
-# Link against unilink
-target_link_libraries(my_app PRIVATE unilink::unilink)
+# Link against wirestead
+target_link_libraries(my_app PRIVATE wirestead::wirestead)
 ```
 
 ### Custom Installation Prefix
@@ -578,17 +578,17 @@ If you installed to a custom prefix:
 
 ```cmake
 # Set the prefix path
-set(CMAKE_PREFIX_PATH "/opt/unilink")
+set(CMAKE_PREFIX_PATH "/opt/wirestead")
 
 # Or use find_package with PATHS
-find_package(unilink CONFIG REQUIRED PATHS "/opt/unilink")
+find_package(wirestead CONFIG REQUIRED PATHS "/opt/wirestead")
 ```
 
 ### Package Components
 
-The unilink package provides:
+The wirestead package provides:
 
-- **unilink::unilink**: Main library target
+- **wirestead::wirestead**: Main library target
 - **Headers**: Automatically included via target
 - **Dependencies**: Boost::system and Threads::Threads
 
@@ -598,10 +598,10 @@ Verify the package is properly installed:
 
 ```bash
 # Check if CMake can find the package
-cmake --find-package -DNAME=unilink -DCOMPILER_ID=GNU -DLANGUAGE=CXX
+cmake --find-package -DNAME=wirestead -DCOMPILER_ID=GNU -DLANGUAGE=CXX
 
 # Check pkg-config (if enabled)
-pkg-config --cflags --libs unilink
+pkg-config --cflags --libs wirestead
 ```
 
 ---
@@ -612,4 +612,4 @@ pkg-config --cflags --libs unilink
 - [Requirements](../user/requirements.md) - System requirements and dependencies
 - [Performance Optimization](../user/performance.md) - Optimize build configuration
 - [Testing Guide](testing.md) - Run tests and CI/CD integration
-- [Quick Start Guide](../user/quickstart.md) - Start using unilink
+- [Quick Start Guide](../user/quickstart.md) - Start using wirestead

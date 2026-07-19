@@ -1,6 +1,6 @@
 # Runtime Behavior Model {#contrib_arch_runtime}
 
-Understanding how `unilink` operates internally helps you write more efficient and robust applications. This document describes the threading model, reconnection policies, and backpressure handling.
+Understanding how `wirestead` operates internally helps you write more efficient and robust applications. This document describes the threading model, reconnection policies, and backpressure handling.
 
 ---
 
@@ -75,8 +75,8 @@ Callback registration and configuration setters should normally be completed bef
 **Important:** Callbacks execute in the I/O thread context:
 
 ```cpp
-auto client = unilink::tcp_client("server.com", 8080)
-    .on_data([](const unilink::MessageContext& ctx) {
+auto client = wirestead::tcp_client("server.com", 8080)
+    .on_data([](const wirestead::MessageContext& ctx) {
         // ⚠️ This runs in the I/O thread!
         // Don't block here!
         std::cout << "Received: " << ctx.data() << std::endl;
@@ -101,7 +101,7 @@ Callbacks should be short and non-blocking. If work must be moved to another thr
 **Bad - Blocks I/O thread:**
 
 ```cpp
-.on_data([](const unilink::MessageContext& ctx) {
+.on_data([](const wirestead::MessageContext& ctx) {
     // ❌ BAD: Blocks I/O thread
     std::this_thread::sleep_for(std::chrono::seconds(1));
     heavy_computation(ctx.data());
@@ -112,7 +112,7 @@ Callbacks should be short and non-blocking. If work must be moved to another thr
 **Good - Offload to worker threads:**
 
 ```cpp
-.on_data([](const unilink::MessageContext& ctx) {
+.on_data([](const wirestead::MessageContext& ctx) {
     // ✅ GOOD: Offload to worker thread
     std::string payload = ctx.data_as_string();
     std::thread([payload = std::move(payload)]() {
@@ -217,12 +217,12 @@ stateDiagram-v2
 ### Configuration Example
 
 ```cpp
-auto client = unilink::tcp_client("server.com", 8080)
+auto client = wirestead::tcp_client("server.com", 8080)
     .retry_interval(5000ms)    // Retry every 5 seconds
-    .on_connect([](const unilink::ConnectionContext&) {
+    .on_connect([](const wirestead::ConnectionContext&) {
         std::cout << "Connected!" << std::endl;
     })
-    .on_disconnect([](const unilink::ConnectionContext&) {
+    .on_disconnect([](const wirestead::ConnectionContext&) {
         std::cout << "Disconnected - will auto-reconnect" << std::endl;
     })
     .build();
@@ -265,16 +265,16 @@ client->start();  // Start the connection explicitly
 Monitor connection state changes:
 
 ```cpp
-auto client = unilink::tcp_client("server.com", 8080)
-    .on_connect([](const unilink::ConnectionContext&) {
+auto client = wirestead::tcp_client("server.com", 8080)
+    .on_connect([](const wirestead::ConnectionContext&) {
         // Connection established
         std::cout << "✅ Connected" << std::endl;
     })
-    .on_disconnect([](const unilink::ConnectionContext&) {
+    .on_disconnect([](const wirestead::ConnectionContext&) {
         // Connection lost (will auto-reconnect)
         std::cout << "❌ Disconnected" << std::endl;
     })
-    .on_error([](const unilink::ErrorContext& ctx) {
+    .on_error([](const wirestead::ErrorContext& ctx) {
         // Error occurred
         std::cout << "⚠️ Error: " << ctx.message() << std::endl;
     })
@@ -318,7 +318,7 @@ client->start();
 ```cpp
 std::atomic<bool> is_ready{false};
 
-auto client = unilink::tcp_client("server.com", 8080)
+auto client = wirestead::tcp_client("server.com", 8080)
     .on_connect([&is_ready]() {
         is_ready = true;
         // Initialize resources
@@ -351,7 +351,7 @@ client.reset();
 
 ## Backpressure Handling
 
-Backpressure is sender-side queue pressure. When the local outgoing queue grows too large because the transport is slower than the application, `unilink` applies internal backpressure protection in the transport layer. Applications can monitor queue pressure via the wrapper-level `on_backpressure` builder callback where supported, or implement additional rate limiting and queue monitoring at the application level.
+Backpressure is sender-side queue pressure. When the local outgoing queue grows too large because the transport is slower than the application, `wirestead` applies internal backpressure protection in the transport layer. Applications can monitor queue pressure via the wrapper-level `on_backpressure` builder callback where supported, or implement additional rate limiting and queue monitoring at the application level.
 
 Backpressure does not mean the remote peer has processed data. For UDP, it only describes the local sender-side queue because UDP has no receiver-side flow control.
 

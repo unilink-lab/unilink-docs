@@ -1,6 +1,6 @@
 # UDS Communication {#tutorial_03}
 
-This tutorial shows the current UDS client/server API using `uds_server(...)` and `uds_client(...)` from `unilink/unilink.hpp`.
+This tutorial shows the current UDS client/server API using `uds_server(...)` and `uds_client(...)` from `wirestead/wirestead.hpp`.
 
 **Duration**: 10 minutes
 **Difficulty**: Beginner to Intermediate
@@ -24,25 +24,25 @@ A local echo service that:
 ```cpp
 #include <iostream>
 #include <string>
-#include <unilink/unilink.hpp>
+#include <wirestead/wirestead.hpp>
 
 int main() {
-    const std::string socket_path = "/tmp/unilink_echo.sock";
+    const std::string socket_path = "/tmp/wirestead_echo.sock";
 
-    std::unique_ptr<unilink::UdsServer> server;
-    server = unilink::uds_server(socket_path)
-        .on_connect([](const unilink::ConnectionContext& ctx) {
+    std::unique_ptr<wirestead::UdsServer> server;
+    server = wirestead::uds_server(socket_path)
+        .on_connect([](const wirestead::ConnectionContext& ctx) {
             std::cout << "Client connected: " << ctx.client_id()
                       << " info=" << ctx.client_info() << std::endl;
         })
-        .on_data([&server](const unilink::MessageContext& ctx) {
+        .on_data([&server](const wirestead::MessageContext& ctx) {
             std::cout << "Received: " << ctx.data() << std::endl;
             server->send_to(ctx.client_id(), "Echo: " + std::string(ctx.data()));
         })
-        .on_disconnect([](const unilink::ConnectionContext& ctx) {
+        .on_disconnect([](const wirestead::ConnectionContext& ctx) {
             std::cout << "Client disconnected: " << ctx.client_id() << std::endl;
         })
-        .on_error([](const unilink::ErrorContext& ctx) {
+        .on_error([](const wirestead::ErrorContext& ctx) {
             std::cerr << "[Error] " << ctx.message() << std::endl;
         })
         .build();
@@ -67,19 +67,19 @@ int main() {
 ```cpp
 #include <iostream>
 #include <string>
-#include <unilink/unilink.hpp>
+#include <wirestead/wirestead.hpp>
 
 int main() {
-    const std::string socket_path = "/tmp/unilink_echo.sock";
+    const std::string socket_path = "/tmp/wirestead_echo.sock";
 
-    auto client = unilink::uds_client(socket_path)
-        .on_connect([](const unilink::ConnectionContext&) {
+    auto client = wirestead::uds_client(socket_path)
+        .on_connect([](const wirestead::ConnectionContext&) {
             std::cout << "Connected to UDS server" << std::endl;
         })
-        .on_data([](const unilink::MessageContext& ctx) {
+        .on_data([](const wirestead::MessageContext& ctx) {
             std::cout << "[Server] " << ctx.data() << std::endl;
         })
-        .on_error([](const unilink::ErrorContext& ctx) {
+        .on_error([](const wirestead::ErrorContext& ctx) {
             std::cerr << "[Error] " << ctx.message() << std::endl;
         })
         .build();
@@ -127,7 +127,7 @@ The callback model and wrapper lifecycle are intentionally very similar to the T
 - [Serial Communication](04_serial_communication.md)
 - [UDP Communication](05_udp_communication.md)
 - [API Reference](../api_guide.md#uds-communication)
-- [Examples Repository](https://github.com/unilink-lab/unilink-examples)
+- [Examples Repository](https://github.com/wirestead/unilink-examples)
 
 ---
 
