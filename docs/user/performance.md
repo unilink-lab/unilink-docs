@@ -192,7 +192,7 @@ auto lidar = wirestead::tcp_client("192.168.1.10", 2368)
 ```
 
 Python-specific performance notes are maintained in
-[Wirestead Python repository](https://github.com/wirestead/unilink-python).
+[Wirestead Python repository](https://github.com/wirestead/wirestead-python).
 
 Aggressive flushing during network disconnects ensures that once reconnection
 occurs, the receiver instantly gets the most recent frame instead of waiting for

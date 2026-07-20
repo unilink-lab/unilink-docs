@@ -140,7 +140,7 @@ For tutorial simplicity, the example above uses the default bounded client limit
 
 Ready-to-build examples are maintained in the external examples repository:
 
-- [Wirestead examples repository](https://github.com/wirestead/unilink-examples)
+- [Wirestead examples repository](https://github.com/wirestead/wirestead-examples)
 
 ---
 

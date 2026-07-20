@@ -64,7 +64,7 @@ You are developing or extending wirestead itself.
 
 ## Examples and Tests
 
-- [Examples Repository](https://github.com/wirestead/unilink-examples)
+- [Examples Repository](https://github.com/wirestead/wirestead-examples)
 - [Core repository tests](https://github.com/wirestead/wirestead/tree/main/test)
 
-[Back to Repository](https://github.com/wirestead/unilink-docs)
+[Back to Repository](https://github.com/wirestead/wirestead-docs)

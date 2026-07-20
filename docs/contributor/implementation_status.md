@@ -29,7 +29,7 @@ If you need the exact public entry points, treat `wirestead/wirestead.hpp` and t
 
 ## Python Binding Scope
 
-Python bindings have moved to https://github.com/wirestead/unilink-python.
+Python bindings have moved to https://github.com/wirestead/wirestead-python.
 This repository keeps only the C++20 core, native package metadata, runtime,
 tests, and C++ API documentation.
 
@@ -64,6 +64,6 @@ If you are trying to understand "what is implemented right now", read in this or
 
 1. `wirestead/wirestead.hpp`
 2. [API Guide](../user/api_guide.md)
-3. [Examples Repository](https://github.com/wirestead/unilink-examples)
+3. [Examples Repository](https://github.com/wirestead/wirestead-examples)
 4. [Test Structure](test_structure.md)
 5. [Architecture Overview](architecture/)

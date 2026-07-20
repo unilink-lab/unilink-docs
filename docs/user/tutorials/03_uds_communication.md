@@ -127,7 +127,7 @@ The callback model and wrapper lifecycle are intentionally very similar to the T
 - [Serial Communication](04_serial_communication.md)
 - [UDP Communication](05_udp_communication.md)
 - [API Reference](../api_guide.md#uds-communication)
-- [Examples Repository](https://github.com/wirestead/unilink-examples)
+- [Examples Repository](https://github.com/wirestead/wirestead-examples)
 
 ---
 
