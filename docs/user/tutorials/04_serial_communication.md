@@ -156,7 +156,7 @@ serial->flow_control("none");
 
 If you want a fuller interactive sample, use the external examples repository:
 
-- [Wirestead examples repository](https://github.com/wirestead/unilink-examples)
+- [Wirestead examples repository](https://github.com/wirestead/wirestead-examples)
 
 Those examples are a better fit for device bring-up and manual testing than this short tutorial.
 
@@ -166,7 +166,7 @@ Those examples are a better fit for device bring-up and manual testing than this
 
 - [UDP Communication](05_udp_communication.md)
 - [API Reference](../api_guide.md#serial-communication)
-- [Examples Repository](https://github.com/wirestead/unilink-examples)
+- [Examples Repository](https://github.com/wirestead/wirestead-examples)
 
 ---
 

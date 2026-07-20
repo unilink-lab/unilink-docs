@@ -238,7 +238,7 @@ ctest --test-dir build --output-on-failure -R IoContext
 ### Benchmarking
 
 Standalone performance benchmarks are maintained separately:
-[Wirestead benchmarks repository](https://github.com/wirestead/unilink-benchmarks).
+[Wirestead benchmarks repository](https://github.com/wirestead/wirestead-benchmarks).
 
 ---
 
@@ -624,7 +624,7 @@ ctest --test-dir build --output-on-failure -L unit_memory_fast
 ## Performance Regression Testing
 
 Use the standalone benchmark repository:
-[Wirestead benchmarks repository](https://github.com/wirestead/unilink-benchmarks).
+[Wirestead benchmarks repository](https://github.com/wirestead/wirestead-benchmarks).
 
 ---
 

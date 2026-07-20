@@ -147,7 +147,7 @@ After the client is running, use:
 
 Ready-to-build examples are maintained in the external examples repository:
 
-- [Wirestead examples repository](https://github.com/wirestead/unilink-examples)
+- [Wirestead examples repository](https://github.com/wirestead/wirestead-examples)
 
 This tutorial stays smaller than the example sources on purpose.
 

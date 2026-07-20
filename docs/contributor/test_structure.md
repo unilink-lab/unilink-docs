@@ -54,7 +54,7 @@ ctest -L "e2e_.*"
 ```
 
 Standalone benchmarks are maintained separately:
-[Wirestead benchmarks repository](https://github.com/wirestead/unilink-benchmarks).
+[Wirestead benchmarks repository](https://github.com/wirestead/wirestead-benchmarks).
 
 ### Useful Focused Runs
 

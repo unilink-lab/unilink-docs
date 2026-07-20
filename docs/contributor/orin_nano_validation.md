@@ -16,7 +16,7 @@ Use this guide when you want to answer one of these questions:
 
 Python bindings are validated in the separate Wirestead Python repository:
 
-https://github.com/wirestead/unilink-python
+https://github.com/wirestead/wirestead-python
 
 This guide assumes:
 
@@ -169,7 +169,7 @@ That creates two connected serial endpoints:
 
 You can then use your own local smoke test against those endpoints. Runnable
 sample programs are maintained separately:
-[Wirestead examples repository](https://github.com/wirestead/unilink-examples).
+[Wirestead examples repository](https://github.com/wirestead/wirestead-examples).
 
 ### Physical Loopback
 
@@ -203,7 +203,7 @@ For a stronger "generic Ubuntu ARM64" claim, add:
 1. The same validation on Ubuntu 24.04 ARM64.
 2. At least one serial validation path, either `socat` or physical loopback.
 3. Wirestead Python ARM64 validation if the Python package is part of your release
-   claim: https://github.com/wirestead/unilink-python
+   claim: https://github.com/wirestead/wirestead-python
 
 ---
 
@@ -248,6 +248,6 @@ If TCP or UDS tests fail intermittently:
 - [Build Guide](build_guide.md)
 - [Requirements](../user/requirements.md)
 - [Serial Communication Tutorial](../user/tutorials/04_serial_communication.md)
-- [Wirestead Python repository](https://github.com/wirestead/unilink-python)
+- [Wirestead Python repository](https://github.com/wirestead/wirestead-python)
 
 [Back to Contributor Guide](index.md)

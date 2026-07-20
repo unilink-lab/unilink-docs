@@ -164,7 +164,7 @@ auto server = wirestead::tcp_server(8080)
 ## Next Steps
 
 1. **Read the API Guide**: [API Guide](api_guide.md)
-2. **Check Examples**: <https://github.com/wirestead/unilink-examples>
+2. **Check Examples**: <https://github.com/wirestead/wirestead-examples>
 3. **View API Reference Locally**: run `./scripts/generate_docs.sh` in this documentation repository, then open `build/doxygen/html/index.html`
 
 ---
@@ -202,6 +202,6 @@ auto client = wirestead::tcp_client("127.0.0.1", 8080)
 
 - **GitHub Issues**: https://github.com/wirestead/wirestead/issues
 - **Documentation**: `docs/` directory
-- **Examples**: <https://github.com/wirestead/unilink-examples>
+- **Examples**: <https://github.com/wirestead/wirestead-examples>
 
 Happy coding! 🚀

@@ -200,7 +200,7 @@ target_link_libraries(my_app PRIVATE wirestead::wirestead)
   - Official port: `wirestead`
   - Recommended for most users
 - **Containers**
-  - [Wirestead container repository](https://github.com/wirestead/unilink-container)
+  - [Wirestead container repository](https://github.com/wirestead/wirestead-container)
 
 Other package managers (e.g., Conan) are not yet officially supported.
 
@@ -230,4 +230,4 @@ cmake -S . -B build \
 
 - [Quick Start Guide](quickstart.md)
 - [API Reference](api_guide.md)
-- [Examples](https://github.com/wirestead/unilink-examples)
+- [Examples](https://github.com/wirestead/wirestead-examples)

@@ -139,7 +139,7 @@ For simple local tests, UDP is useful when you want low overhead and can tolerat
 
 For ready-to-run maintained examples, use:
 
-- [Wirestead examples repository](https://github.com/wirestead/unilink-examples)
+- [Wirestead examples repository](https://github.com/wirestead/wirestead-examples)
 
 ---
 
